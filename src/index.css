@@ -1,0 +1,289 @@
+@import "tailwindcss";
+
+@font-face {
+    font-family: "Poppins";
+    src: url("assets/fonts/Poppins.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "PoppinsSemi";
+    src: url("assets/fonts/Poppins-Semibold.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Minecraftia";
+    src: url("assets/fonts/Minecraftia.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+:root {
+    color: #EEEEEE;
+    font-family: "Poppins", sans-serif;
+}
+
+div.auth {
+    background-color: #000;
+    background-image: url('assets/images/initial-bg.jpeg');
+    background-size: cover;
+    background-position: center;
+}
+
+div.home {
+    background-color: #0c1016;
+    background-image: url('assets/images/bg.png');
+    background-size: cover;
+    background-position: center;
+}
+
+.minecraftia {
+    font-family: "Minecraftia", sans-serif;
+}
+
+.-text-semibold {
+    font-family: "PoppinsSemi", sans-serif !important;
+}
+
+.-webkit-app-region-drag {
+    -webkit-app-region: drag;
+}
+
+.-webkit-app-region-no-drag {
+    -webkit-app-region: no-drag;
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+    /* Cor de fundo */
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #282828;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #333333;
+}
+
+.text-shadow {
+    text-shadow: 1px 1px 5px #131313;
+}
+
+.btn-text-shadow {
+    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.4);
+}
+
+button.mcb {
+    background-color: #008542;
+    color: #fff;
+    text-shadow: 0 2px 0 rgb(0 0 0 / 25%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border: 0;
+    z-index: 1;
+    user-select: none;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    white-space: unset;
+    padding: 0.8rem 1.5rem;
+    text-decoration: none;
+    font-weight: 900;
+    transition: all 0.7s cubic-bezier(0, 0.8, 0.26, 0.99);
+}
+
+button.mcb:before {
+    position: absolute;
+    pointer-events: none;
+    top: 0;
+    left: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    content: "";
+    transition: 0.7s cubic-bezier(0, 0.8, 0.26, 0.99);
+    z-index: -1;
+    background-color: #008542 !important;
+    box-shadow: 0 -4px rgb(21 108 0 / 50%) inset,
+        0 4px rgb(100 253 31 / 99%) inset, -4px 0 rgb(100 253 31 / 50%) inset,
+        4px 0 rgb(21 108 0 / 50%) inset;
+}
+
+button.mcb:after {
+    position: absolute;
+    pointer-events: none;
+    top: 0;
+    left: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    content: "";
+    box-shadow: 0 4px 0 0 rgb(0 0 0 / 15%);
+    transition: 0.7s cubic-bezier(0, 0.8, 0.26, 0.99);
+}
+
+button.mcb:hover:before {
+    box-shadow: 0 -4px rgb(0 0 0 / 50%) inset, 0 4px rgb(255 255 255 / 20%) inset,
+        -4px 0 rgb(255 255 255 / 20%) inset, 4px 0 rgb(0 0 0 / 50%) inset;
+}
+
+button.mcb:hover:after {
+    box-shadow: 0 4px 0 0 rgb(0 0 0 / 15%);
+}
+
+button.mcb:active {
+    transform: translateY(4px);
+}
+
+button.mcb:active:after {
+    box-shadow: 0 0px 0 0 rgb(0 0 0 / 15%);
+}
+
+button.mcb-voxy {
+    background-color: #F9A825;
+    color: #fff;
+    text-shadow: 0 2px 0 rgb(0 0 0 / 25%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border: 0;
+    z-index: 1;
+    user-select: none;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    white-space: unset;
+    padding: 0.8rem 1.5rem;
+    text-decoration: none;
+    font-weight: 900;
+    transition: all 0.7s cubic-bezier(0, 0.8, 0.26, 0.99);
+}
+
+button.mcb-voxy:before {
+    position: absolute;
+    pointer-events: none;
+    top: 0;
+    left: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    content: "";
+    transition: 0.7s cubic-bezier(0, 0.8, 0.26, 0.99);
+    z-index: -1;
+    background-color: #F9A825 !important;
+    box-shadow: 0 -4px rgb(245 127 23 / 50%) inset,
+        0 4px rgb(251, 192, 45) inset, -4px 0 rgb(251 192 45 / 50%) inset,
+        4px 0 rgb(245 127 23 / 50%) inset;
+}
+
+button.mcb-voxy:after {
+    position: absolute;
+    pointer-events: none;
+    top: 0;
+    left: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    content: "";
+    box-shadow: 0 4px 0 0 rgb(0 0 0 / 15%);
+    transition: 0.7s cubic-bezier(0, 0.8, 0.26, 0.99);
+}
+
+button.mcb-voxy:hover:before {
+    box-shadow: 0 -4px rgb(0 0 0 / 50%) inset, 0 4px rgb(255 255 255 / 20%) inset,
+        -4px 0 rgb(255 255 255 / 20%) inset, 4px 0 rgb(0 0 0 / 50%) inset;
+}
+
+button.mcb-voxy:hover:after {
+    box-shadow: 0 4px 0 0 rgb(0 0 0 / 15%);
+}
+
+button.mcb-voxy:active {
+    transform: translateY(4px);
+}
+
+button.mcb-voxy:active:after {
+    box-shadow: 0 0px 0 0 rgb(0 0 0 / 15%);
+}
+
+button.mcb-offline {
+    background-color: #757575;
+    color: #fff;
+    text-shadow: 0 2px 0 rgb(117, 117, 117);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border: 0;
+    z-index: 1;
+    user-select: none;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    white-space: unset;
+    padding: 0.8rem 1.5rem;
+    text-decoration: none;
+    font-weight: 900;
+    transition: all 0.7s cubic-bezier(0, 0.8, 0.26, 0.99);
+}
+
+button.mcb-offline:before {
+    position: absolute;
+    pointer-events: none;
+    top: 0;
+    left: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    content: "";
+    transition: 0.7s cubic-bezier(0, 0.8, 0.26, 0.99);
+    z-index: -1;
+    background-color: rgb(158, 158, 158) !important;
+    box-shadow: 0 -4px rgb(97 97 97 / 50%) inset,
+        0 4px rgb(117, 117, 117) inset, -4px 0 rgb(117 117 117 / 50%) inset,
+        4px 0 rgb(97 97 97 / 50%) inset;
+}
+
+button.mcb-offline:after {
+    position: absolute;
+    pointer-events: none;
+    top: 0;
+    left: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    content: "";
+    box-shadow: 0 4px 0 0 rgb(0 0 0 / 15%);
+    transition: 0.7s cubic-bezier(0, 0.8, 0.26, 0.99);
+}
+
+button.mcb-offline:hover:before {
+    box-shadow: 0 -4px rgb(0 0 0 / 50%) inset, 0 4px rgb(255 255 255 / 20%) inset,
+        -4px 0 rgb(255 255 255 / 20%) inset, 4px 0 rgb(0 0 0 / 50%) inset;
+}
+
+button.mcb-offline:hover:after {
+    box-shadow: 0 4px 0 0 rgb(0 0 0 / 15%);
+}
+
+button.mcb-offline:active {
+    transform: translateY(4px);
+}
+
+button.mcb-offline:active:after {
+    box-shadow: 0 0px 0 0 rgb(0 0 0 / 15%);
+}
