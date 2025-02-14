@@ -4,6 +4,7 @@ import microsoft_logo_icon from '../assets/images/microsoft_logo_icon.png';
 import { v4 as uuidv4 } from 'uuid';
 import { useEffect, useState } from 'react';
 import { FaArrowLeft } from "react-icons/fa6";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 function AuthSelect({ setPage }: { setPage: React.Dispatch<React.SetStateAction<any>> }) {
     return (
@@ -18,6 +19,7 @@ function AuthSelect({ setPage }: { setPage: React.Dispatch<React.SetStateAction<
 
 function VoxyAccount({ setPage }: { setPage: React.Dispatch<React.SetStateAction<any>> }) {
     const [nick, setNick] = useState(false)
+    const [verify, setVerify] = useState(false)
 
     const [formData, setFormData] = useState({
         username: '',
@@ -32,7 +34,13 @@ function VoxyAccount({ setPage }: { setPage: React.Dispatch<React.SetStateAction
 
     const handleChange = (e: any) => {
         const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
+    
+        if (name === "username") {
+            const sanitizedValue = value.replace(/[^a-zA-Z0-9]/g, "");
+            setFormData({ ...formData, [name]: sanitizedValue });
+        } else {
+            setFormData({ ...formData, [name]: value });
+        }
     };
 
     useEffect(() => {
@@ -73,16 +81,18 @@ function VoxyAccount({ setPage }: { setPage: React.Dispatch<React.SetStateAction
     return (
             <form className='w-full flex flex-col items-center gap-10' onSubmit={handleSubmit}>
                 <div className='flex flex-col gap-4'>
-                    <div className='flex flex-col'>
+                    <div className='relative flex flex-col'>
                         <label htmlFor='username' className='text-xs -text-semibold mb-1'>Nick / Username</label>
                         <input
                             className='p-2 px-3 bg-black/60 text-neutral-200 placeholder:text-neutral-600 rounded-lg outline-none focus:bg-black/80 duration-200'
                             name="username"
                             id="username"
                             placeholder='Notch'
+                            maxLength={16}
                             value={formData.username}
                             onChange={handleChange}
                         />
+                        <AiOutlineLoading3Quarters className={`absolute top-8 right-3 animate-spin ${verify ? 'block' : 'hidden'}`} />
                         {nick ? 'true' : 'false'}
                         {errors.username && <p style={{ color: 'red' }}>{errors.username}</p>}
                     </div>
