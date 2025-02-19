@@ -81,21 +81,15 @@ ipcMain.handle("launch-minecraft", async (_event, version, loginMode, uuid, name
 
     let session = await loadSession();
 
-    if (session) {
+    if (loginMode === "offline") {
+      authorization = {
+        name,
+        uuid,
+        access_token: "offline",
+      }
+    } else if (session) {
       console.log("Sessão encontrada, reutilizando...");
       authorization = session;
-    } else if (loginMode === "offline") {
-      authorization = {
-        access_token: "null",
-        client_token: "null",
-        uuid,
-        name,
-        user_properties: {},
-        meta: {
-          type: "offline",
-          demo: false,
-        },
-      };
     } else {
       console.log('Sessão não encontrada.')
     }
@@ -111,11 +105,12 @@ ipcMain.handle("launch-minecraft", async (_event, version, loginMode, uuid, name
       memory: {
         max: "6G",
         min: "4G",
-      },
+      }
+      /*
       quickPlay: {
         type: "legacy",
         identifier: "play.hypixel.net",
-      },
+      }, */
     };
 
     console.log("Iniciando Minecraft...");

@@ -42,7 +42,7 @@ export default function Backend() {
         <div className="flex flex-col gap-4">
             <button onClick={() => handleLoginMicrosoft()}>Login microsoft</button>
             <button onClick={() => handleLogoutMicrosoft()}>Sair microsoft</button>
-            <button onClick={() => handleLaunch("1.8.9", "offline", "00000000-0000-0000-0000-000000000000", "Offline")}>Iniciar Minecraft 1.8.9</button>
+            <button onClick={() => handleLaunch("1.8.9", "offline", "00000000-0000-0000-0000-000000000000", "Zaaik3843")}>Iniciar Minecraft 1.8.9</button>
             <button onClick={() => handleLaunch("1.20.1", null, null, null)}>Iniciar Minecraft 1.20.1</button>
         </div>
     );

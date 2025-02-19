@@ -9,6 +9,11 @@ import TitleBar from "./components/TitleBar";
 import Language from "./pages/Language";
 import { useEffect, useState } from "react";
 import Backend from "./Backend";
+import VoxyLogin from "./pages/Auth/VoxyLogin";
+import VoxyRegister from "./pages/Auth/VoxyRegister";
+import Offline from "./pages/Auth/Offline";
+import { Toaster } from "react-hot-toast";
+import IsAuth from "./contexts/IsAuth";
 
 function App() {
   return (
@@ -48,12 +53,13 @@ function AppContent() {
           {/* <Route index element={<Backend />} /> */}
           <Route path="/lang" element={<Language />} />
           <Route path="/terms" element={<Terms />} />
-          <Route path="auth" element={<Auth />} />
+          <Route path="/auth" element={<Auth />} />
         </Route>
         <Route path="/main" element={<MainLayout />}>
           <Route index element={<Home />} />
         </Route>
       </Routes>
+      <Toaster position="top-center" reverseOrder={false} />
     </div>
   );
 }
@@ -68,15 +74,17 @@ function BaseLayout() {
 
 function MainLayout() {
   return (
-    <div className="flex h-screen pt-8">
-      <Selector />
-      <div className="flex-1 flex flex-col">
-        <Navbar />
-        <div className="flex-1 flex">
-          <Outlet />
+    <IsAuth>
+      <div className="flex h-screen pt-8">
+        <Selector />
+        <div className="flex-1 flex flex-col">
+          <Navbar />
+          <div className="flex-1 flex">
+            <Outlet />
+          </div>
         </div>
       </div>
-    </div>
+    </IsAuth>
   );
 }
 
