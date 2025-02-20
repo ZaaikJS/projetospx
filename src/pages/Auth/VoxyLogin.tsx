@@ -3,12 +3,16 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { FaArrowLeft } from "react-icons/fa6";
 import { Link } from "react-router-dom";
+import auth from "../../services/auth";
+import { useNavigate } from "react-router-dom";
 
 interface VoxyLoginProps {
     setPage: (value: string | null) => void;
 }
 
 export default function VoxyLogin({ setPage }: VoxyLoginProps) {
+    const navigate = useNavigate();
+
     const [formData, setFormData] = useState({
         email: '',
         password: '',
@@ -49,8 +53,10 @@ export default function VoxyLogin({ setPage }: VoxyLoginProps) {
                 loginMail: formData.email,
                 loginPass: formData.password
             });
-            localStorage.setItem('loginMode', 'voxy')
-            localStorage.setItem('refreshToken', response.data.refreshToken)
+            var data = response.data
+            auth.saveSession('voxy', data.username, data.tagName, data.legacyName, data.refreshToken)
+            navigate('/main')
+
         } catch (error: any) {
             if (error.response?.data?.error === "AUTH_EMAIL_NOT_FOUND" || error.response?.data?.error === "AUTH_WRONG_PASSWORD") {
                 toast.error('Check email and password.', { duration: 4000, style: { background: '#d32f2f', color: '#fff' } })
@@ -64,7 +70,7 @@ export default function VoxyLogin({ setPage }: VoxyLoginProps) {
     return (
         <>
             <form className='w-full flex flex-col items-center gap-6' onSubmit={Login}>
-                <p className='text-xl'>Logging into an existing account</p>
+                <p className='text-xl' onClick={auth.destroySession}>Logging into an existing account</p>
                 <div className='flex flex-col gap-6 w-72'>
                     <div className='relative flex flex-col'>
                         <label htmlFor='email' className='text-xs font-semibold mb-1'>Email</label>

@@ -8,10 +8,6 @@ import Auth from "./pages/Auth";
 import TitleBar from "./components/TitleBar";
 import Language from "./pages/Language";
 import { useEffect, useState } from "react";
-import Backend from "./Backend";
-import VoxyLogin from "./pages/Auth/VoxyLogin";
-import VoxyRegister from "./pages/Auth/VoxyRegister";
-import Offline from "./pages/Auth/Offline";
 import { Toaster } from "react-hot-toast";
 import IsAuth from "./contexts/IsAuth";
 

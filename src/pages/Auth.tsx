@@ -1,10 +1,11 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import logo from '../assets/images/logo.png';
 import microsoft_logo_icon from '../assets/images/microsoft_logo_icon.png';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import VoxyLogin from './Auth/VoxyLogin';
 import Offline from './Auth/Offline';
 import VoxyRegister from './Auth/VoxyRegister';
+import auth from '../services/auth';
 
 function AuthSelect({ setPage }: { setPage: React.Dispatch<React.SetStateAction<any>> }) {
     return (
@@ -18,6 +19,15 @@ function AuthSelect({ setPage }: { setPage: React.Dispatch<React.SetStateAction<
 }
 
 export default function Auth() {
+    const navigate = useNavigate();
+    const session = auth.getSession();
+
+    useEffect(() => {
+        if (session === "voxy" || session === "offline") {
+            navigate("/main");
+        }
+    }, []);
+
     const [page, setPage] = useState<any>(null);
 
     let component;

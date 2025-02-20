@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import auth from "./services/auth";
 
 export default function Initialize() {
     const navigate = useNavigate();
@@ -35,17 +36,26 @@ export default function Initialize() {
     }, []);
 
     useEffect(() => {
+        if (isValidLanguage === null || isValidTerms === null) return;
+
         if (isValidLanguage === false) {
             navigate("/lang");
-        } else if (isValidTerms === false) {
+            return;
+        } 
+
+        if (isValidTerms === false) {
             navigate("/terms");
-        } else if (isValidLanguage === true && isValidTerms === true) {
+            return;
+        }
+
+        const session = auth.getSession();
+
+        if (session === "voxy" || session === "offline") {
+            navigate("/main");
+        } else {
             navigate("/auth");
         }
-    }, [isValidLanguage, isValidTerms, navigate]);
+    }, [isValidLanguage, isValidTerms, navigate]);    
 
-    return (
-        <>
-        </>
-    );
+    return null;
 }

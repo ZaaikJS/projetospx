@@ -33,7 +33,7 @@ export default function VoxyRegister({ setPage }: VoxyRegisterProps) {
         const { name, value } = e.target;
 
         if (name === "username") {
-            const sanitizedValue = value.replace(/[^a-zA-Z0-9]/g, "");
+            const sanitizedValue = value.replace(/[^a-zA-Z0-9_]/g, "");
             setFormData({ ...formData, [name]: sanitizedValue });
         } else {
             setFormData({ ...formData, [name]: value });
@@ -52,7 +52,7 @@ export default function VoxyRegister({ setPage }: VoxyRegisterProps) {
             try {
                 setVerify(true);
 
-                const response = await axios.get(`http://localhost:3000/api/launcher/register`, {
+                const response = await axios.get(`http://localhost:3000/api/launcher/auth/register`, {
                     params: {
                         name: formData.username,
                         tagName: formData.tagName
