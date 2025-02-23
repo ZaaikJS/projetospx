@@ -10,6 +10,11 @@ import Language from "./pages/Language";
 import { useEffect, useState } from "react";
 import { Toaster } from "react-hot-toast";
 import IsAuth from "./contexts/IsAuth";
+import VoxyRegister from "./pages/Auth/VoxyRegister";
+import Microsoft from "./pages/Auth/Microsoft";
+import VoxyLogin from "./pages/Auth/VoxyLogin";
+import Offline from "./pages/Auth/Offline";
+import Backend from "./Backend";
 
 function App() {
   return (
@@ -55,7 +60,7 @@ function AppContent() {
           <Route index element={<Home />} />
         </Route>
       </Routes>
-      <Toaster position="top-center" reverseOrder={false} />
+      <Toaster position="bottom-center" reverseOrder={false} />
     </div>
   );
 }

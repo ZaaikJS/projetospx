@@ -6,27 +6,81 @@ import VoxyLogin from './Auth/VoxyLogin';
 import Offline from './Auth/Offline';
 import VoxyRegister from './Auth/VoxyRegister';
 import auth from '../services/auth';
+import Microsoft from './Auth/Microsoft';
+import toast from 'react-hot-toast';
+import axios from 'axios';
 
 function AuthSelect({ setPage }: { setPage: React.Dispatch<React.SetStateAction<any>> }) {
+    const navigate = useNavigate();
+
+    const handleLoginMicrosoft = async () => {
+        try {
+            setPage('microsoft')
+            const result = await window.electron.ipcRenderer.loginMicrosoft();
+
+            if (result.success) {
+                try {
+                    await axios.post("http://localhost:3000/api/launcher/auth/register", {
+                        mode: 'microsoft',
+                        uuid: result.authorization.uuid,
+                        username: result.authorization.name,
+                        microsoft: true,
+                        language: localStorage.getItem('language')
+                    });
+                    auth.saveSession('microsoft', result.authorization.name, null, null, null)
+                    toast.success('Login successful.', { duration: 4000, style: { background: '#43a047', color: '#fff' } })
+                    navigate('/main')
+                    return;
+                } catch (error: any) {
+                    toast.error('An error ocurred on Microsoft login. Please try again.', { duration: 4000, style: { background: '#d32f2f', color: '#fff' } });
+                    setPage(null);
+                }
+            }
+
+            const { error } = result;
+
+            switch (error) {
+                case "error.gui.closed":
+                    toast.error('Microsoft login canceled.', { duration: 4000, style: { background: '#d32f2f', color: '#fff' } });
+                    setPage(null);
+                    break;
+                case "error.auth.xsts.userNotFound":
+                    toast.error("This Microsoft account doesn't have Minecraft.", { duration: 4000, style: { background: '#d32f2f', color: '#fff' } });
+                    setPage(null);
+                    break;
+                default:
+                    alert("Ocorreu um erro inesperado. Tente novamente.");
+                    console.error("Erro desconhecido:", error);
+            }
+        } catch (error) {
+            console.error("Ocorreu um erro ao tentar logar:", error);
+        }
+    };
+
     return (
         <>
             <button className="mcb-voxy" onClick={() => setPage('voxylogin')}>Voxy Account</button>
-            <button className="mcb flex gap-2" onClick={() => setPage('microsoft')}>Microsoft <img src={microsoft_logo_icon} width={18} /></button>
+            <button className="mcb flex gap-2" onClick={() => handleLoginMicrosoft()}>Microsoft <img src={microsoft_logo_icon} width={18} /></button>
             <button className="mcb-offline" onClick={() => setPage('offline')}>Offline</button>
-            <Link to="/main">Home</Link>
         </>
     );
 }
 
 export default function Auth() {
+    
     const navigate = useNavigate();
+
     const session = auth.getSession();
 
     useEffect(() => {
-        if (session === "voxy" || session === "offline") {
+        if (session === "voxy" || session === "microsoft") {
             navigate("/main");
+        } else if (session === "offline") {
+            navigate("/main");
+        } else {
+            navigate("/auth");
         }
-    }, []);
+    }, [session, navigate]);
 
     const [page, setPage] = useState<any>(null);
 
@@ -39,7 +93,7 @@ export default function Auth() {
             component = <VoxyRegister setPage={setPage} />;
             break;
         case 'microsoft':
-            component = undefined;
+            component = <Microsoft setPage={setPage} />;
             break;
         case 'offline':
             component = <Offline setPage={setPage} />;

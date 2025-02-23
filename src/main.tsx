@@ -14,6 +14,7 @@ declare global {
               writeFile(filePath: string, data: string): Promise<void>;
               logoutMicrosoft(): Promise<any>;
               loginMicrosoft(): Promise<any>;
+              loadMicrosoft(): Promise<any>;
               launchMinecraft(version: string, loginMode: string | null, uuid: string | null, name: string | null): Promise<any>;
           };
       };

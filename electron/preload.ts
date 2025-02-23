@@ -9,6 +9,7 @@ contextBridge.exposeInMainWorld("electron", {
     writeFile: (filePath: string, data: string): Promise<void> => ipcRenderer.invoke("write-file", filePath, data),
     logoutMicrosoft: (): Promise<any> => ipcRenderer.invoke("logoutMicrosoft"),
     loginMicrosoft: (): Promise<any> => ipcRenderer.invoke("loginMicrosoft"),
+    loadMicrosoft: (): Promise<any> => ipcRenderer.invoke("loadMicrosoft"),
     launchMinecraft: (version: string, loginMode: string | null, uuid: string | null, name: string | null): Promise<any> => ipcRenderer.invoke("launch-minecraft", version, loginMode, uuid, name),
   },
 });

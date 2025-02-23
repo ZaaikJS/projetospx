@@ -64,16 +64,27 @@ async function saveSession(session: any) {
 let authorization: any;
 
 ipcMain.handle("loginMicrosoft", async () => {
-  const authManager = new Auth("select_account");
-  const xboxManager = await authManager.launch("electron");
-  const token = await xboxManager.getMinecraft();
-  authorization = token.mclc();
+  try {
+    const authManager = new Auth("select_account");
+    const xboxManager = await authManager.launch("electron");
+    const token = await xboxManager.getMinecraft();
+    authorization = token.mclc();
 
-  await saveSession(authorization);
+    await saveSession(authorization);
+
+    return { success: true, authorization };
+  } catch (error: any) {
+    console.error("Erro ao autenticar com a Microsoft:", error);
+    return { success: false, error: error || "Erro desconhecido" };
+  }
 });
 
 ipcMain.handle("logoutMicrosoft", async () => {
   await keytar.deletePassword(SERVICE_NAME, ACCOUNT_NAME);
+});
+
+ipcMain.handle("loadMicrosoft", async () => {
+  await loadSession();
 });
 
 ipcMain.handle("launch-minecraft", async (_event, version, loginMode, uuid, name) => {

@@ -11,7 +11,7 @@ export default function IsAuth({ children }: IsAuthProps) {
     const navigate = useNavigate();
     const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
-    const fetchData = async () => {
+    const voxyLogin = async () => {
         try {
             await axios.get(`http://localhost:3000/api/launcher/auth/capture`, {
                 params: {
@@ -24,11 +24,22 @@ export default function IsAuth({ children }: IsAuthProps) {
         }
     };
 
+    const microsoft = async () => {
+        try {
+            await window.electron.ipcRenderer.loginMicrosoft()
+            setIsAuthenticated(true)
+        } catch (err) {
+            navigate("/auth")
+        }
+    };
+
     useEffect(() => {
         setTimeout(() => {
             switch (auth.getSession()) {
                 case 'voxy':
-                    return fetchData();
+                    return voxyLogin();
+                case 'microsoft':
+                    return setIsAuthenticated(true);
                 case 'offline':
                     return setIsAuthenticated(true);
                 default:
@@ -38,7 +49,7 @@ export default function IsAuth({ children }: IsAuthProps) {
     }, []);
 
     if (isAuthenticated === null) {
-        return <div className="flex justify-center items-center w-full h-screen">Loading...</div>;
+        return <div className="flex justify-center items-center w-full h-screen">Uma tela de carregamento foda...</div>;
     }
 
     if (!isAuthenticated) {

@@ -15,15 +15,28 @@ export default function Backend() {
     const handleLoginMicrosoft = async () => {
         try {
             const result = await window.electron.ipcRenderer.loginMicrosoft();
+    
             if (result.success) {
-                console.log('Login realizado!')
-            } else {
-                console.log("Erro ao logar: " + result.error);
+                const { authorization } = result; // Pegando o retorno
+    
+                return authorization;
+            }
+    
+            const { error } = result;
+    
+            switch (error) {
+                case "error.gui.closed":
+                    break;
+                case "error.auth.xsts.userNotFound":
+                    break;
+                default:
+                    alert("Ocorreu um erro inesperado. Tente novamente.");
+                    console.error("Erro desconhecido:", error);
             }
         } catch (error) {
-            console.error("Ocorreu um erro:", error);
+            console.error("Ocorreu um erro ao tentar logar:", error);
         }
-    };
+    };      
 
     const handleLogoutMicrosoft = async () => {
         try {

@@ -2,14 +2,18 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { FaArrowLeft } from "react-icons/fa6";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from 'uuid';
+import auth from "../../services/auth";
+import toast from "react-hot-toast";
 
 interface VoxyRegisterProps {
     setPage: (value: string | null) => void;
 }
 
 export default function VoxyRegister({ setPage }: VoxyRegisterProps) {
+    const navigate = useNavigate();
+    
     const [nick, setNick] = useState(null as null | boolean);
     const [verify, setVerify] = useState(false);
 
@@ -27,6 +31,7 @@ export default function VoxyRegister({ setPage }: VoxyRegisterProps) {
         tagName: generateRandomNumber(),
         language: 'pt-BR'
     });
+    
     const [errors, setErrors] = useState<any>({});
 
     const handleChange = (e: any) => {
@@ -81,7 +86,7 @@ export default function VoxyRegister({ setPage }: VoxyRegisterProps) {
     const handleSubmit = async (e: any) => {
         e.preventDefault();
         const newErrors: any = {};
-    
+        
         if (!formData.username) {
             newErrors.username = "Please enter a nickname.";
         }
@@ -91,18 +96,27 @@ export default function VoxyRegister({ setPage }: VoxyRegisterProps) {
         if (formData.password !== formData.confPassword) {
             newErrors.confPassword = "Passwords do not match.";
         }
-    
+        
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
             return;
         }
-    
+        
         try {
-            const response = await axios.post('http://localhost:3000/api/launcher/auth/register', formData, {
+            await axios.post('http://localhost:3000/api/launcher/auth/register', formData, {
                 headers: { 'Content-Type': 'application/json' }
             });
     
-            console.log('User registered successfully', response.data);
+            const response = await axios.post('http://localhost:3000/api/launcher/auth', {
+                loginMail: formData.email,
+                loginPass: formData.password
+            });
+    
+            var data = response.data;
+            auth.saveSession('voxy', data.username, data.tagName, data.legacyName, data.refreshToken);
+            toast.success('Register successful.', { duration: 4000, style: { background: '#43a047', color: '#fff' } })
+            navigate('/main');
+            
         } catch (error: any) {
             if (error.response?.data?.error === "EMAIL_IS_ALREADY_USED") {
                 setErrors({ email: "This email is already in use." });

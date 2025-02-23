@@ -50,7 +50,9 @@ export default function Initialize() {
 
         const session = auth.getSession();
 
-        if (session === "voxy" || session === "offline") {
+        if (session === "voxy" || session === "microsoft") {
+            navigate("/main");
+        } else if (session === "offline") {
             navigate("/main");
         } else {
             navigate("/auth");

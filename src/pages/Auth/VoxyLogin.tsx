@@ -55,6 +55,7 @@ export default function VoxyLogin({ setPage }: VoxyLoginProps) {
             });
             var data = response.data
             auth.saveSession('voxy', data.username, data.tagName, data.legacyName, data.refreshToken)
+            toast.success('Login successful.', { duration: 4000, style: { background: '#43a047', color: '#fff' } })
             navigate('/main')
 
         } catch (error: any) {
@@ -70,7 +71,7 @@ export default function VoxyLogin({ setPage }: VoxyLoginProps) {
     return (
         <>
             <form className='w-full flex flex-col items-center gap-6' onSubmit={Login}>
-                <p className='text-xl' onClick={auth.destroySession}>Logging into an existing account</p>
+                <p className='text-xl'>Logging into an existing account</p>
                 <div className='flex flex-col gap-6 w-72'>
                     <div className='relative flex flex-col'>
                         <label htmlFor='email' className='text-xs font-semibold mb-1'>Email</label>

@@ -23,6 +23,7 @@ export default function Terms() {
         try {
             const newData = { terms: terms };
             await window.electron.ipcRenderer.writeFile("terms.json", newData as any);
+            localStorage.setItem('terms', 'true')
             navigate("/auth")
         } catch (error) {
             console.error('Erro ao escrever no arquivo:', error);

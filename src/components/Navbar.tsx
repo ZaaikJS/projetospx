@@ -4,6 +4,9 @@ import auth from "../services/auth";
 import { useNavigate } from "react-router-dom";
 import bust from '../assets/images/logo.png';
 
+import { IoHome, IoServer } from "react-icons/io5";
+import { FaWrench } from "react-icons/fa6";
+
 export default function Navbar() {
     const navigate = useNavigate();
     const [jump, setJump] = useState(false);
@@ -21,18 +24,20 @@ export default function Navbar() {
     return (
         <>
             <div className="flex gap-4 w-full h-20 py-4 pr-4">
-                <div className="flex items-center w-full h-full px-4 bg-white/10 rounded-xl shadow-lg">
-                    Aqui vai ser o menu
+                <div className="flex items-center space-x-4 w-full h-full px-4 bg-white/10 rounded-xl shadow-lg">
+                    <button className="flex gap-1 items-center hover:bg-white/10 px-2 py-1 rounded-lg hover:shadow-lg duration-100 cursor-pointer"><IoHome /> Home</button>
+                    <button className="flex gap-1 items-center hover:bg-white/10 px-2 py-1 rounded-lg hover:shadow-lg duration-100 cursor-pointer"><IoServer /> Installations</button>
+                    <button className="flex gap-1 items-center hover:bg-white/10 px-2 py-1 rounded-lg hover:shadow-lg duration-100 cursor-pointer"><FaWrench /> Options</button>
                 </div>
-                <div 
-                    className="relative w-96 flex items-center h-full px-4 bg-white/10 rounded-xl shadow-lg" 
-                    onMouseEnter={() => setJump(true)} 
+                <div
+                    className="relative w-96 flex items-center h-full px-4 bg-white/10 rounded-xl shadow-lg"
+                    onMouseEnter={() => setJump(true)}
                     onMouseLeave={() => setJump(false)}
                 >
                     <div className="absolute h-16 w-18 bottom-0 left-1 overflow-hidden">
-                        <img 
-                            className={`absolute ${jump ? "bottom-0" : "-bottom-1.5"} h-16 drop-shadow-lg transition-all duration-300`} 
-                            src={skinUrl} 
+                        <img
+                            className={`absolute ${jump ? "bottom-0" : "-bottom-1.5"} h-16 drop-shadow-lg transition-all duration-300`}
+                            src={skinUrl}
                             onError={() => setSkinUrl(bust)}
                             alt="Player Skin"
                         />
@@ -45,10 +50,10 @@ export default function Navbar() {
                         </div>
                     </div>
                     <div className="ml-auto">
-                        <IoMdExit 
-                            className="text-neutral-300 cursor-pointer hover:text-neutral-100 duration-100" 
-                            onClick={logout} 
-                            aria-label="Logout" 
+                        <IoMdExit
+                            className="text-neutral-300 cursor-pointer hover:text-neutral-100 duration-100"
+                            onClick={logout}
+                            aria-label="Logout"
                         />
                     </div>
                 </div>

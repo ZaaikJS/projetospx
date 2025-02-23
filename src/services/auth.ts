@@ -25,7 +25,8 @@ const getSession = () => {
             }
             break;
         case 'microsoft':
-            return 'microsoft';
+                return 'microsoft';
+            break;
         case 'offline':
             if (localStorage.getItem('username')) {
                 return 'offline';
@@ -48,7 +49,11 @@ const destroySession = async () => {
     } catch (error: any) {
         console.log('An internal error occurred.');
     } finally {
-        localStorage.clear();
+        localStorage.removeItem('loginMode')
+        localStorage.removeItem('username')
+        localStorage.removeItem('tagName')
+        localStorage.removeItem('legacyName')
+        localStorage.removeItem('refreshToken')
     }
 };
 
