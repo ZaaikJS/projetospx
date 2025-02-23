@@ -15,6 +15,7 @@ import Microsoft from "./pages/Auth/Microsoft";
 import VoxyLogin from "./pages/Auth/VoxyLogin";
 import Offline from "./pages/Auth/Offline";
 import Backend from "./Backend";
+import Installs from "./pages/Installs";
 
 function App() {
   return (
@@ -58,6 +59,7 @@ function AppContent() {
         </Route>
         <Route path="/main" element={<MainLayout />}>
           <Route index element={<Home />} />
+          <Route path="installs" element={<Installs />} />
         </Route>
       </Routes>
       <Toaster position="bottom-center" reverseOrder={false} />

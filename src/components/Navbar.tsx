@@ -1,16 +1,17 @@
-import { useState } from "react";
+import { SetStateAction, useState } from "react";
 import { IoMdExit } from "react-icons/io";
 import auth from "../services/auth";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import bust from '../assets/images/logo.png';
-
-import { IoHome, IoServer } from "react-icons/io5";
-import { FaWrench } from "react-icons/fa6";
+import voxyLogo from '../assets/images/logo_v.png';
+import msLogo from '../assets/images/microsoft_logo_icon.png';
 
 export default function Navbar() {
     const navigate = useNavigate();
+    const location = useLocation();
     const [jump, setJump] = useState(false);
     const [skinUrl, setSkinUrl] = useState(`https://starlightskins.lunareclipse.studio/render/pointing/Zaaik/bust?borderHighlight=true&borderHighlightRadius=10`);
+    const [hoveredButton, setHoveredButton] = useState(null);
 
     const logout = async () => {
         try {
@@ -21,13 +22,77 @@ export default function Navbar() {
         }
     };
 
+    const logIcon = () => {
+        switch (auth.getData("loginMode")) {
+            case 'voxy':
+                return <img src={voxyLogo} alt="Voxy Account" width={14} />
+            case 'microsoft':
+                return <img src={msLogo} alt="Microsoft" width={14} />
+            default:
+                return;
+        }
+    }
+
+    const isActive = (path: string) => {
+        return location.pathname === path;
+    };
+
+    const handleMouseEnter = (buttonName: any) => {
+        setHoveredButton(buttonName);
+    };
+
+    const handleMouseLeave = () => {
+        setHoveredButton(null);
+    };
+
     return (
         <>
             <div className="flex gap-4 w-full h-20 py-4 pr-4">
-                <div className="flex items-center space-x-4 w-full h-full px-4 bg-white/10 rounded-xl shadow-lg">
-                    <button className="flex gap-1 items-center hover:bg-white/10 px-2 py-1 rounded-lg hover:shadow-lg duration-100 cursor-pointer"><IoHome /> Home</button>
-                    <button className="flex gap-1 items-center hover:bg-white/10 px-2 py-1 rounded-lg hover:shadow-lg duration-100 cursor-pointer"><IoServer /> Installations</button>
-                    <button className="flex gap-1 items-center hover:bg-white/10 px-2 py-1 rounded-lg hover:shadow-lg duration-100 cursor-pointer"><FaWrench /> Options</button>
+                <div className="flex items-center space-x-4 w-full h-full px-4 bg-white/10 rounded-xl shadow-lg -text-semibold">
+                    <button
+                        className={`uppercase cursor-pointer relative after:content-[''] after:absolute after:left-1/2 after:bottom-0 after:w-0 after:max-w-[2rem] after:h-[2px] after:bg-amber-500 after:transition-all after:duration-300 hover:after:w-full hover:after:translate-x-[-50%] ${isActive('/main') ? 'after:w-full after:translate-x-[-50%]' : ''}`}
+                        onClick={() => navigate('/main')}
+                        onMouseEnter={() => handleMouseEnter('home')}
+                        onMouseLeave={handleMouseLeave}
+                        style={{
+                            textShadow: isActive('/main') || hoveredButton === 'home' ? '0px 0px 20px rgba(255, 235, 59, 0.3)' : 'none',
+                        }}
+                    >
+                        Home
+                    </button>
+                    <button
+                        className={`uppercase cursor-pointer relative after:content-[''] after:absolute after:left-1/2 after:bottom-0 after:w-0 after:max-w-[2rem] after:h-[2px] after:bg-green-500 after:transition-all after:duration-300 hover:after:w-full hover:after:translate-x-[-50%] ${isActive('/main/installs') ? 'after:w-full after:translate-x-[-50%]' : ''}`}
+                        onClick={() => navigate('/main/installs')}
+                        onMouseEnter={() => handleMouseEnter('installs')}
+                        onMouseLeave={handleMouseLeave}
+                        style={{
+                            textShadow: isActive('/main/installs') || hoveredButton === 'installs' ? '0px 0px 20px rgba(76, 175, 80, 0.3)' : 'none',
+                        }}
+                    >
+                        Installations
+                    </button>
+                    <button
+                        className={`uppercase cursor-pointer relative after:content-[''] after:absolute after:left-1/2 after:bottom-0 after:w-0 after:max-w-[2rem] after:h-[2px] after:bg-pink-500 after:transition-all after:duration-300 hover:after:w-full hover:after:translate-x-[-50%] ${isActive('/main/skins') ? 'after:w-full after:translate-x-[-50%]' : ''}`}
+                        onClick={() => navigate('/main/skins')}
+                        onMouseEnter={() => handleMouseEnter('skins')}
+                        onMouseLeave={handleMouseLeave}
+                        style={{
+                            textShadow: isActive('/main/skins') || hoveredButton === 'skins' ? '0px 0px 20px rgba(233, 30, 99, 0.3)' : 'none',
+                        }}
+                    >
+                        Skins
+                    </button>
+                    <button
+                        className={`uppercase cursor-pointer relative after:content-[''] after:absolute after:left-1/2 after:bottom-0 after:w-0 after:max-w-[2rem] after:h-[2px] after:bg-orange-800 after:transition-all after:duration-300 hover:after:w-full hover:after:translate-x-[-50%] ${isActive('/main/options') ? 'after:w-full after:translate-x-[-50%]' : ''}`}
+                        onClick={() => navigate('/main/options')}
+                        onMouseEnter={() => handleMouseEnter('options')}
+                        onMouseLeave={handleMouseLeave}
+                        style={{
+                            textShadow: isActive('/main/options') || hoveredButton === 'options' ? '0px 0px 20px rgba(245, 124, 0, 0.3)' : 'none',
+                        }}
+                    >
+                        Options
+                    </button>
                 </div>
                 <div
                     className="relative w-96 flex items-center h-full px-4 bg-white/10 rounded-xl shadow-lg"
@@ -43,10 +108,10 @@ export default function Navbar() {
                         />
                     </div>
                     <div className="flex flex-col justify-center ml-16">
-                        <p className="text-xs text-neutral-400">Logged as:</p>
+                        <p className={`text-xs text-neutral-400 ${(auth.getData("loginMode") === 'offline') && 'hidden'}`}>Logged as:</p>
                         <div className="flex items-center gap-1">
                             <p className="-text-semibold">{auth.getData("username")}</p>
-                            <p className="text-xs text-neutral-400">(Microsoft)</p>
+                            <p className="text-xs text-neutral-400">{logIcon()}</p>
                         </div>
                     </div>
                     <div className="ml-auto">
