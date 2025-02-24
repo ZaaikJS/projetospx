@@ -19,45 +19,43 @@ export default function Installs() {
                     New
                 </div>
             </div>
-            <div className="h-full mb-4 bg-black/30 rounded-xl backdrop-blur-sm border-2 border-neutral-400/20 shadow-lg overflow-hidden">
-                <div className="flex items-center gap-4 hover:bg-white/5 p-4 cursor-pointer group">
-                    <div>
-                        <img src={voxyLogo} width={48} />
-                    </div>
-                    <div>
-                        <p className='-text-semibold'>Voxy FullPvp</p>
-                        <p className='text-sm text-neutral-400'>1.5.2</p>
-                    </div>
-                    <div className='ml-auto hidden group-hover:block'>
-                        <button className='bg-green-600 text-white text-sm px-2 py-1 -text-semibold shadow-lg hover:bg-green-500 cursor-pointer'>Play</button>
-                    </div>
+            <div className="flex items-center gap-4 bg-gradient-to-tr from-white/10 to-white/5 hover:from-white/20 shadow-lg p-4 cursor-pointer group">
+                <div>
+                    <img src={voxyLogo} width={48} />
                 </div>
-                <div className="flex items-center gap-4 hover:bg-white/5 p-4 cursor-pointer group">
-                    <div>
-                        <img src={voxyLogo} width={48} />
-                    </div>
-                    <div>
-                        <p className='-text-semibold'>Voxy Minigames</p>
-                        <p className='text-sm text-neutral-400'>1.16</p>
-                    </div>
-                    <div className='ml-auto hidden group-hover:block'>
-                        <button className='bg-green-600 text-white text-sm px-2 py-1 -text-semibold shadow-lg hover:bg-green-500 cursor-pointer'>Play</button>
-                    </div>
+                <div>
+                    <p className='-text-semibold'>Voxy FullPvp</p>
+                    <p className='text-sm text-neutral-400'>1.5.2</p>
                 </div>
-                <div className="flex items-center gap-4 hover:bg-white/5 p-4 cursor-pointer group">
-                    <div>
-                        <img src={grassBlock} width={48} />
-                    </div>
-                    <div>
-                        <p className='-text-semibold'>{'<Unnamed installation>'}</p>
-                        <p className='text-sm text-neutral-400'>1.8.9</p>
-                    </div>
-                    <div className='ml-auto hidden group-hover:block'>
-                        <div className='flex items-center gap-2'>
-                            <button className='bg-green-600 text-white text-sm px-2 py-1 -text-semibold shadow-lg hover:bg-green-500 cursor-pointer'>Play</button>
-                            <button className='bg-white/5 text-white text-lg p-1 -text-semibold shadow-lg hover:bg-white/10 cursor-pointer border-2 border-white/15'><IoFolderOutline /></button>
-                            <button className='bg-white/5 text-white text-lg p-1 -text-semibold shadow-lg hover:bg-white/10 cursor-pointer border-2 border-white/15'><BsThreeDots /></button>
-                        </div>
+                <div className='ml-auto hidden group-hover:block'>
+                    <button className='bg-green-600 text-white text-sm px-2 py-1 -text-semibold shadow-lg hover:bg-green-500 cursor-pointer'>Play</button>
+                </div>
+            </div>
+            <div className="flex items-center gap-4 bg-gradient-to-tr from-white/10 to-white/5 hover:from-white/20 shadow-lg p-4 cursor-pointer group">
+                <div>
+                    <img src={voxyLogo} width={48} />
+                </div>
+                <div>
+                    <p className='-text-semibold'>Voxy Minigames</p>
+                    <p className='text-sm text-neutral-400'>1.16</p>
+                </div>
+                <div className='ml-auto hidden group-hover:block'>
+                    <button className='bg-green-600 text-white text-sm px-2 py-1 -text-semibold shadow-lg hover:bg-green-500 cursor-pointer'>Play</button>
+                </div>
+            </div>
+            <div className="flex items-center gap-4 bg-gradient-to-tr from-white/10 to-white/5 hover:from-white/20 shadow-lg p-4 cursor-pointer group">
+                <div>
+                    <img src={grassBlock} width={48} />
+                </div>
+                <div>
+                    <p className='-text-semibold'>{'<Unnamed installation>'}</p>
+                    <p className='text-sm text-neutral-400'>1.8.9</p>
+                </div>
+                <div className='ml-auto hidden group-hover:block'>
+                    <div className='flex items-center gap-2'>
+                        <button className='bg-green-600 text-white text-sm px-2 py-1 -text-semibold shadow-lg hover:bg-green-500 cursor-pointer'>Play</button>
+                        <button className='bg-white/5 text-white text-lg p-1 -text-semibold shadow-lg hover:bg-white/10 cursor-pointer border-2 border-white/15'><IoFolderOutline /></button>
+                        <button className='bg-white/5 text-white text-lg p-1 -text-semibold shadow-lg hover:bg-white/10 cursor-pointer border-2 border-white/15'><BsThreeDots /></button>
                     </div>
                 </div>
             </div>
