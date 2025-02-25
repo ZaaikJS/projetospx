@@ -15,7 +15,8 @@ import Microsoft from "./pages/Auth/Microsoft";
 import VoxyLogin from "./pages/Auth/VoxyLogin";
 import Offline from "./pages/Auth/Offline";
 import Backend from "./Backend";
-import Installs from "./pages/Installs";
+import Minecraft from "./pages/Main/Minecraft";
+import Installs from "./pages/Main/Installs";
 
 function App() {
   return (
@@ -59,6 +60,7 @@ function AppContent() {
         </Route>
         <Route path="/main" element={<MainLayout />}>
           <Route index element={<Home />} />
+          <Route path="minecraft" element={<Minecraft />} />
           <Route path="installs" element={<Installs />} />
         </Route>
       </Routes>

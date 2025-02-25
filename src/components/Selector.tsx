@@ -19,8 +19,8 @@ export default function Selector() {
                             <img className="ml-2" src={logoV} alt="Logo V" width={45} />
                         </Link>
                         <Link
-                            className={`mr-2 flex justify-center items-center h-16 rounded-r-2xl hover:bg-white/10 hover:shadow-lg duration-75 ${location.pathname === "/main/test" && "bg-white/10 shadow-lg"}`}
-                            to="/main/test"
+                            className={`mr-2 flex justify-center items-center h-16 rounded-r-2xl hover:bg-white/10 hover:shadow-lg duration-75 ${location.pathname === "/main/minecraft" && "bg-white/10 shadow-lg"}`}
+                            to="/main/minecraft"
                         >
                             <img className="ml-2 rounded-xl" src={mcLogo} alt="MC Logo" width={45} />
                         </Link>

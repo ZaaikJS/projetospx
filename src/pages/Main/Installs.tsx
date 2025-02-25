@@ -1,5 +1,5 @@
-import voxyLogo from '../assets/images/logo_v.png';
-import grassBlock from '../assets/images/grass_block.png';
+import voxyLogo from '../../assets/images/logo_v.png';
+import grassBlock from '../../assets/images/grass_block.png';
 
 import { IoFolderOutline } from "react-icons/io5";
 import { BsThreeDots } from "react-icons/bs";

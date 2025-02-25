@@ -6,7 +6,7 @@ import { Client } from "minecraft-launcher-core";
 import { Auth } from "msmc";
 import keytar from 'keytar';
 
-const SERVICE_NAME = "MinecraftLauncher";
+const SERVICE_NAME = "VoxyLauncher";
 const ACCOUNT_NAME = "user_session";
 
 function createWindow() {
@@ -87,9 +87,8 @@ ipcMain.handle("loadMicrosoft", async () => {
   await loadSession();
 });
 
-ipcMain.handle("launch-minecraft", async (_event, version, loginMode, uuid, name) => {
+ipcMain.handle("launch-minecraft", async (event, version, loginMode, uuid, name) => {
   try {
-
     let session = await loadSession();
 
     if (loginMode === "offline") {
@@ -97,12 +96,12 @@ ipcMain.handle("launch-minecraft", async (_event, version, loginMode, uuid, name
         name,
         uuid,
         access_token: "offline",
-      }
+      };
     } else if (session) {
       console.log("Sessão encontrada, reutilizando...");
       authorization = session;
     } else {
-      console.log('Sessão não encontrada.')
+      console.log("Sessão não encontrada.");
     }
 
     let opts = {
@@ -116,19 +115,30 @@ ipcMain.handle("launch-minecraft", async (_event, version, loginMode, uuid, name
       memory: {
         max: "6G",
         min: "4G",
-      }
-      /*
-      quickPlay: {
-        type: "legacy",
-        identifier: "play.hypixel.net",
-      }, */
+      },
     };
 
-    console.log("Iniciando Minecraft...");
     launcher.launch(opts as any);
 
-    launcher.on("data", (e) => console.log(e.toString()));
-    launcher.on("close", (e) => console.log(`Minecraft fechado com código ${e}`));
+    event.sender.send("minecraft-started");
+
+    launcher.on("progress", (progress) => {
+      if (progress.total > 0) {
+        event.sender.send("download-progress", {
+          current: progress.task,
+          total: progress.total,
+          type: progress.type,
+        });
+
+        if (progress.task >= progress.total) {
+          event.sender.send("download-complete", { type: progress.type });
+        }
+      }
+    });
+
+    launcher.on("close", (code) => {
+      event.sender.send("minecraft-closed");
+    });
 
     return { success: true };
   } catch (error: any) {

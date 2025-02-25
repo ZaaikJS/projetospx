@@ -1,0 +1,36 @@
+import "./PlayControl.css"
+import playBg from "../../../assets/images/play/mc.jpg"
+
+export default function PlayControl() {
+    return (
+        <>
+            <div className="h-72 rounded-xl overflow-hidden border-2 border-white/10 shadow-lg shadow-black/20">
+                <div className="relative h-full bg-white/10">
+                    <div className="relative w-full h-full overflow-hidden flex justify-center items-center shine-image group">
+                        <img
+                            className="object-cover w-full h-full opacity-80 scale-100 transition-all duration-500 group-hover:scale-110 group-hover:opacity-100"
+                            src={playBg}
+                            alt="VoxyMC"
+                        />
+                        <div className="absolute flex gap-36">
+                            <button
+                                className="relative w-52 h-18 bg-red-500/80 shadow-md shadow-red-500/80 text-white btn-text-shadow font-bold flex flex-col items-center justify-center overflow-hidden rounded-xl cursor-pointer transition-all duration-300 hover:bg-red-500/85 hover:shadow-lg"
+                            >
+                                <span className="z-10">Play</span>
+                                <span className="z-10">VoxyMC FullPvP</span>
+                                <span className="z-10 text-[10px] font-extralight opacity-90">Legacy 1.5.2</span>
+
+                                <div
+                                    className="absolute top-0 left-0 w-full h-full bg-white/10"
+                                    style={{
+                                        clipPath: 'circle(360% at 50% -660%)',
+                                    }}
+                                ></div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </>
+    );
+}
