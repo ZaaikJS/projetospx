@@ -31,9 +31,9 @@ export default function Backend() {
     };
   }, []);
 
-  const handleLaunch = async (version: string, loginMode: string | null, uuid: string | null, name: string | null) => {
+  const handleLaunch = async (version: string, type: string, loginMode: string | null, uuid: string | null, name: string | null) => {
     try {
-      const result = await window.electron.ipcRenderer.launchMinecraft(version, loginMode, uuid, name);
+      const result = await window.electron.ipcRenderer.launchMinecraft(version, type, loginMode, uuid, name);
       if (result.success) {
       } else {
         alert("Erro ao iniciar Minecraft: " + result.error);
@@ -106,10 +106,10 @@ export default function Backend() {
       <p>{session !== null ? session : "Carregando..."}</p>
       <button onClick={() => handleLoginMicrosoft()}>Login Microsoft</button>
       <button onClick={() => handleLogoutMicrosoft()}>Sair Microsoft</button>
-      <button onClick={() => handleLaunch("1.8.9", "offline", "00000000-0000-0000-0000-000000000000", "Zaaik3843")}>
+      <button onClick={() => handleLaunch("1.8.9", "release", "offline", "00000000-0000-0000-0000-000000000000", "Zaaik3843")}>
         Iniciar Minecraft 1.8.9
       </button>
-      <button onClick={() => handleLaunch("1.20.1", null, null, null)}>Iniciar Minecraft 1.20.1</button>
+      <button onClick={() => handleLaunch("1.20.1", "release", null, null, null)}>Iniciar Minecraft 1.20.1</button>
 
       <div className="mt-4">
         <p>Status do Minecraft: {minecraftRunning ? "Em execução" : "Parado"}</p>

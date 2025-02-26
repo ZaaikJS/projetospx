@@ -66,7 +66,7 @@ export default function Navbar() {
     return (
         <>
             <div className="flex gap-4 w-full h-20 py-4 pr-4">
-                <div className="flex items-center space-x-4 w-full h-full px-4 bg-white/10 rounded-xl shadow-lg -text-semibold">
+                <div className="flex items-center gap-4 w-full h-full px-4 bg-white/10 rounded-xl shadow-lg -text-semibold">
                     <button
                         className={`uppercase cursor-pointer relative after:content-[''] after:absolute after:left-1/2 after:bottom-0 after:w-0 after:max-w-[2rem] after:h-[2px] after:bg-amber-500 after:transition-all after:duration-300 hover:after:w-full hover:after:translate-x-[-50%] ${isActive('/main') ? 'after:w-full after:translate-x-[-50%]' : ''}`}
                         onClick={() => navigate('/main')}

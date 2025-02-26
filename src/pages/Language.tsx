@@ -1,13 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import logo from '../assets/images/logo.png';
-import unitedStates from '../assets/images/flags/united-states.png';
-import brazil from '../assets/images/flags/brazil.png';
-import spain from '../assets/images/flags/spain.png';
 
 export default function Language() {
     const navigate = useNavigate();
-    const [language, setLanguage] = useState(null as unknown as string)
+    const [language, setLanguage] = useState<string | null>(null);
 
     const languages = [
         { code: 'en', text: 'Select your language' },
@@ -32,11 +29,12 @@ export default function Language() {
     }, []);
 
     const handleWriteFile = async () => {
+        if (!language) return;
         try {
-            window.electron.ipcRenderer.db.put("language", { language: language })
-            navigate("/terms")
+            await window.electron.ipcRenderer.invoke("db:put", "preferences", "language", language);
+            navigate("/terms");
         } catch (error) {
-            console.error('Erro ao escrever no arquivo:', error);
+            console.error('Erro ao salvar no banco de dados:', error);
         }
     };
 
@@ -54,7 +52,7 @@ export default function Language() {
                 <div onClick={() => setLanguage("hi_IN")} className={`p-1 px-2 hover:bg-black/40 ${language === "hi_IN" && 'bg-black/40'}`}>हिन्दी</div>
                 <div onClick={() => setLanguage("ar_SA")} className={`p-1 px-2 hover:bg-black/40 ${language === "ar_SA" && 'bg-black/40'}`}>عربي</div>
             </div>
-            {language !== null && (
+            {language && (
                 <button className="mcb" onClick={handleWriteFile}>Continue</button>
             )}
         </div>

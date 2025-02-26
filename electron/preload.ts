@@ -22,16 +22,22 @@ contextBridge.exposeInMainWorld("electron", {
     // Lançamento do Minecraft
     launchMinecraft: (
       version: string,
+      type: string,
       loginMode: string | null,
       uuid: string | null,
       name: string | null
-    ): Promise<any> => ipcRenderer.invoke("launch-minecraft", version, loginMode, uuid, name),
+    ): Promise<any> => ipcRenderer.invoke("launch-minecraft", version, type, loginMode, uuid, name),
 
     // Banco de Dados (LMDB)
     db: {
-      put: (key: string, value: any): Promise<void> => ipcRenderer.invoke("db:put", key, value),
-      get: (key: string, subKey?: string): Promise<any> => ipcRenderer.invoke("db:get", key, subKey),
-      delete: (key: string): Promise<void> => ipcRenderer.invoke("db:delete", key),
+      put: (table: string, key: string, value: any): Promise<void> =>
+        ipcRenderer.invoke("db:put", table, key, value),
+
+      get: (table: string, key: string): Promise<any> =>
+        ipcRenderer.invoke("db:get", table, key),
+
+      delete: (table: string, key: string): Promise<void> =>
+        ipcRenderer.invoke("db:delete", table, key),
     },
   },
 });

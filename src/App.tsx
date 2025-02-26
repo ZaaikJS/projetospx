@@ -2,7 +2,7 @@ import { HashRouter as Router, Routes, Route, Outlet, useLocation } from "react-
 import Navbar from "./components/Navbar";
 import Selector from "./components/Selector";
 import Initialize from "./Initialize";
-import Home from "./pages/Home";
+import Home from "./pages/Main/Home";
 import Terms from "./pages/Terms";
 import Auth from "./pages/Auth";
 import TitleBar from "./components/TitleBar";

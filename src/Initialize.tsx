@@ -11,19 +11,11 @@ export default function Initialize() {
 
     const checkData = async () => {
         try {
-            const languageContent: any = await window.electron.ipcRenderer.db.get("language");
-            if (languageContent && typeof languageContent === "object" && "language" in languageContent) {
-                setIsValidLanguage(allowedLanguages.includes(languageContent.language));
-            } else {
-                setIsValidLanguage(false);
-            }
-    
-            const termsContent: any = await window.electron.ipcRenderer.db.get("terms");
-            if (termsContent && typeof termsContent === "object" && "terms" in termsContent) {
-                setIsValidTerms(termsContent.terms === true);
-            } else {
-                setIsValidTerms(false);
-            }
+            const languageContent: any = await window.electron.ipcRenderer.db.get("preferences", "language");
+            setIsValidLanguage(allowedLanguages.includes(languageContent));
+
+            const termsContent: any = await window.electron.ipcRenderer.db.get("preferences", "terms");
+            setIsValidTerms(termsContent === true);
         } catch (error) {
             setIsValidLanguage(false);
             setIsValidTerms(false);
@@ -37,12 +29,12 @@ export default function Initialize() {
     useEffect(() => {
         if (isValidLanguage === null || isValidTerms === null) return;
     
-        if (isValidLanguage === false) {
+        if (!isValidLanguage) {
             navigate("/lang");
             return;
         } 
     
-        if (isValidTerms === false) {
+        if (!isValidTerms) {
             navigate("/terms");
             return;
         }

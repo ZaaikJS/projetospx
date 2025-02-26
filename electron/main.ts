@@ -5,7 +5,7 @@ import fs from 'fs';
 import { Client } from "minecraft-launcher-core";
 import { Auth } from "msmc";
 
-import { open } from 'lmdb';
+import Database from "better-sqlite3";
 
 import keytar from 'keytar';
 
@@ -90,7 +90,7 @@ ipcMain.handle("loadMicrosoft", async () => {
   await loadSession();
 });
 
-ipcMain.handle("launch-minecraft", async (event, version, loginMode, uuid, name) => {
+ipcMain.handle("launch-minecraft", async (event, version, type, loginMode, uuid, name) => {
   try {
     let session = await loadSession();
 
@@ -103,6 +103,7 @@ ipcMain.handle("launch-minecraft", async (event, version, loginMode, uuid, name)
     } else if (session) {
       console.log("Sessão encontrada, reutilizando...");
       authorization = session;
+      console.log(session)
     } else {
       console.log("Sessão não encontrada.");
     }
@@ -113,7 +114,7 @@ ipcMain.handle("launch-minecraft", async (event, version, loginMode, uuid, name)
       root: path.join(app.getPath("appData"), "VoxyLauncherDev"),
       version: {
         number: version,
-        type: "release",
+        type,
       },
       memory: {
         max: "6G",
@@ -150,28 +151,54 @@ ipcMain.handle("launch-minecraft", async (event, version, loginMode, uuid, name)
   }
 });
 
-let db = open({
-  path: path.join(app.getPath("appData"), "VoxyLauncherDev", "data"),
-  compression: true,
-});
+const dbPath: string = path.join(app.getPath("appData"), "VoxyLauncherDev", "data", "local");
 
-ipcMain.handle("db:put", async (_, key, value) => {
-  return db.put(key, value);
-});
+const db = new Database(dbPath);
 
-ipcMain.handle("db:get", async (_, key, subKey) => {
-  const data = await db.get(key);
-  
-  if (subKey && data && typeof data === "object") {
-      return data[subKey];
+const ensureTableExists = (tableName: string) => {
+  if (!/^[a-zA-Z0-9_]+$/.test(tableName)) {
+    throw new Error("Nome da tabela inválido!");
   }
 
-  return data;
-});
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS ${tableName} (
+      key TEXT PRIMARY KEY,
+      value TEXT NOT NULL
+    )
+  `);
+};
 
-ipcMain.handle("db:delete", async (_, key) => {
-  return db.remove(key);
-});
+type IPCHandler = (_: Electron.IpcMainInvokeEvent, table: string, key: string, value?: any, subKey?: string) => Promise<any>;
+
+ipcMain.handle("db:put", (async (_, table: string, key: string, value: any) => {
+  ensureTableExists(table);
+  const stmt = db.prepare(`
+    INSERT INTO ${table} (key, value) VALUES (?, ?)
+    ON CONFLICT(key) DO UPDATE SET value = excluded.value
+  `);
+  stmt.run(key, JSON.stringify(value));
+  return true;
+}) as IPCHandler);
+
+ipcMain.handle("db:get", (async (_, table: string, key: string, subKey?: string) => {
+  ensureTableExists(table);
+  const stmt = db.prepare(`SELECT value FROM ${table} WHERE key = ?`);
+  const row = stmt.get(key) as { value: string } | undefined;
+
+  if (row) {
+    const data = JSON.parse(row.value);
+    return subKey && typeof data === "object" ? data[subKey] : data;
+  }
+
+  return null;
+}) as IPCHandler);
+
+ipcMain.handle("db:delete", (async (_, table: string, key: string) => {
+  ensureTableExists(table);
+  const stmt = db.prepare(`DELETE FROM ${table} WHERE key = ?`);
+  stmt.run(key);
+  return true;
+}) as IPCHandler);
 
 app.whenReady().then(createWindow);
 

@@ -12,7 +12,7 @@ export default function IsAuth({ children }: IsAuthProps) {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
     const voxyLogin = async () => {
-        const token = await auth.getData("refreshToken");
+        const token = localStorage.getItem('refreshToken');
 
         try {
             await axios.get(`http://localhost:3000/api/launcher/auth/capture`, {
@@ -20,15 +20,6 @@ export default function IsAuth({ children }: IsAuthProps) {
                     refreshToken: token,
                 }
             });
-            setIsAuthenticated(true)
-        } catch (err) {
-            navigate("/auth")
-        }
-    };
-
-    const microsoft = async () => {
-        try {
-            await window.electron.ipcRenderer.loginMicrosoft()
             setIsAuthenticated(true)
         } catch (err) {
             navigate("/auth")
