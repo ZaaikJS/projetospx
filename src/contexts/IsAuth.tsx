@@ -12,10 +12,12 @@ export default function IsAuth({ children }: IsAuthProps) {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
     const voxyLogin = async () => {
+        const token = await auth.getData("refreshToken");
+
         try {
             await axios.get(`http://localhost:3000/api/launcher/auth/capture`, {
                 params: {
-                    refreshToken: localStorage.getItem('refreshToken'),
+                    refreshToken: token,
                 }
             });
             setIsAuthenticated(true)
@@ -34,18 +36,26 @@ export default function IsAuth({ children }: IsAuthProps) {
     };
 
     useEffect(() => {
-        setTimeout(() => {
-            switch (auth.getSession()) {
-                case 'voxy':
-                    return voxyLogin();
-                case 'microsoft':
-                    return setIsAuthenticated(true);
-                case 'offline':
-                    return setIsAuthenticated(true);
+        const checkSession = async () => {
+            const session = await auth.getSession();
+
+            switch (session) {
+                case "voxy":
+                    voxyLogin();
+                    break;
+                case "microsoft":
+                    setIsAuthenticated(true);
+                    break;
+                case "offline":
+                    setIsAuthenticated(true);
+                    break;
                 default:
-                    return setIsAuthenticated(false);
+                    setIsAuthenticated(false);
+                    break;
             }
-        }, 1000);
+        };
+
+        checkSession();
     }, []);
 
     if (isAuthenticated === null) {

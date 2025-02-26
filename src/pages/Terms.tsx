@@ -6,7 +6,7 @@ import { useState } from "react";
 
 export default function Terms() {
     const navigate = useNavigate();
-    const [terms, setTerms] = useState(false);
+    const [terms, setTerms] = useState(false)
     const [error, setError] = useState(false)
 
     const handleTerms = () => {
@@ -21,9 +21,7 @@ export default function Terms() {
         }
 
         try {
-            const newData = { terms: terms };
-            await window.electron.ipcRenderer.writeFile("terms.json", newData as any);
-            localStorage.setItem('terms', 'true')
+            window.electron.ipcRenderer.db.put("terms", { terms: true })
             navigate("/auth")
         } catch (error) {
             console.error('Erro ao escrever no arquivo:', error);

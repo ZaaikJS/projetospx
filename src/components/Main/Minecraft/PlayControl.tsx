@@ -1,6 +1,8 @@
 import "./PlayControl.css"
 import playBg from "../../../assets/images/play/mc.jpg"
 
+import { BsFillCaretDownFill } from "react-icons/bs";
+
 export default function PlayControl() {
     return (
         <>
@@ -12,20 +14,16 @@ export default function PlayControl() {
                             src={playBg}
                             alt="VoxyMC"
                         />
-                        <div className="absolute flex gap-36">
+                        <div className="absolute flex">
                             <button
-                                className="relative w-52 h-18 bg-red-500/80 shadow-md shadow-red-500/80 text-white btn-text-shadow font-bold flex flex-col items-center justify-center overflow-hidden rounded-xl cursor-pointer transition-all duration-300 hover:bg-red-500/85 hover:shadow-lg"
+                                className="mcb flex flex-col w-80"
                             >
-                                <span className="z-10">Play</span>
-                                <span className="z-10">VoxyMC FullPvP</span>
-                                <span className="z-10 text-[10px] font-extralight opacity-90">Legacy 1.5.2</span>
-
-                                <div
-                                    className="absolute top-0 left-0 w-full h-full bg-white/10"
-                                    style={{
-                                        clipPath: 'circle(360% at 50% -660%)',
-                                    }}
-                                ></div>
+                                <span className="z-10 text-2xl">Play</span>
+                                <span className="z-10 text-xs font-semibold mt-2">{'<Unnamed installation>'}</span>
+                                <span className="z-10 text-[10px] font-extralight opacity-90">1.8.9</span>
+                            </button>
+                            <button className="mcb text-xl !px-4">
+                                <BsFillCaretDownFill />
                             </button>
                         </div>
                     </div>

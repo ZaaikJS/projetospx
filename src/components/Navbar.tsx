@@ -1,4 +1,4 @@
-import { SetStateAction, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import { IoMdExit } from "react-icons/io";
 import auth from "../services/auth";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -12,7 +12,25 @@ export default function Navbar() {
     const [jump, setJump] = useState(false);
     const [skinUrl, setSkinUrl] = useState(`https://starlightskins.lunareclipse.studio/render/pointing/Zaaik/bust?borderHighlight=true&borderHighlightRadius=10`);
     const [hoveredButton, setHoveredButton] = useState(null);
+    const [username, setUsername] = useState<string | null>(null);
+    const [loginMode, setLoginMode] = useState<string | null>(null);
 
+    useEffect(() => {
+        const fetchUserData = async () => {
+            const mode = await auth.getData("loginMode");
+            const user = await auth.getData("username");
+
+            setLoginMode(mode);
+            setUsername(user);
+
+            if (user) {
+                setSkinUrl(`https://starlightskins.lunareclipse.studio/render/pointing/${user}/bust?borderHighlight=true&borderHighlightRadius=10`);
+            }
+        };
+
+        fetchUserData();
+    }, []);
+    
     const logout = async () => {
         try {
             auth.destroySession();
@@ -23,15 +41,15 @@ export default function Navbar() {
     };
 
     const logIcon = () => {
-        switch (auth.getData("loginMode")) {
+        switch (loginMode) {
             case 'voxy':
-                return <img src={voxyLogo} alt="Voxy Account" width={14} />
+                return <img src={voxyLogo} alt="Voxy Account" width={14} />;
             case 'microsoft':
-                return <img src={msLogo} alt="Microsoft" width={14} />
+                return <img src={msLogo} alt="Microsoft" width={14} />;
             default:
-                return;
+                return null;
         }
-    }
+    };
 
     const isActive = (path: string) => {
         return location.pathname === path;
@@ -108,9 +126,9 @@ export default function Navbar() {
                         />
                     </div>
                     <div className="flex flex-col justify-center ml-16">
-                        <p className={`text-xs text-neutral-400 ${(auth.getData("loginMode") === 'offline') && 'hidden'}`}>Logged as:</p>
+                        {loginMode !== "offline" && <p className="text-xs text-neutral-400">Logged as:</p>}
                         <div className="flex items-center gap-1">
-                            <p className="-text-semibold">{auth.getData("username")}</p>
+                            <p className="-text-semibold">{username}</p>
                             <p className="text-xs text-neutral-400">{logIcon()}</p>
                         </div>
                     </div>

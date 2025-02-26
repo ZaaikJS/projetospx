@@ -22,3 +22,71 @@
 .shine-image:hover::before {
     left: 100%;
 }
+
+button.play-button {
+    background-color: #494949;
+    color: #fff;
+    text-shadow: 0 2px 0 rgb(117, 117, 117);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border: 0;
+    z-index: 1;
+    user-select: none;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    white-space: unset;
+    padding: 0.8rem 1.5rem;
+    text-decoration: none;
+    font-weight: 900;
+    transition: all 0.7s cubic-bezier(0, 0.8, 0.26, 0.99);
+}
+
+button.play-button:before {
+    position: absolute;
+    pointer-events: none;
+    top: 0;
+    left: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    content: "";
+    transition: 0.7s cubic-bezier(0, 0.8, 0.26, 0.99);
+    z-index: -1;
+    background-color: rgb(158, 158, 158) !important;
+    box-shadow: 0 -4px rgb(97 97 97 / 50%) inset,
+        0 4px rgb(194, 194, 194) inset, -4px 0 rgba(194, 194, 194, 0.5) inset,
+        4px 0 rgb(97 97 97 / 50%) inset;
+}
+
+button.play-button:after {
+    position: absolute;
+    pointer-events: none;
+    top: 0;
+    left: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    content: "";
+    box-shadow: 0 4px 0 0 rgb(0 0 0 / 15%);
+    transition: 0.7s cubic-bezier(0, 0.8, 0.26, 0.99);
+}
+
+button.play-button:hover:before {
+    box-shadow: 0 -4px rgb(0 0 0 / 50%) inset, 0 4px rgb(255 255 255 / 20%) inset,
+        -4px 0 rgb(255 255 255 / 20%) inset, 4px 0 rgb(0 0 0 / 50%) inset;
+}
+
+button.play-button:hover:after {
+    box-shadow: 0 4px 0 0 rgb(0 0 0 / 15%);
+}
+
+button.play-button:active {
+    transform: translateY(4px);
+}
+
+button.play-button:active:after {
+    box-shadow: 0 0px 0 0 rgb(0 0 0 / 15%);
+}

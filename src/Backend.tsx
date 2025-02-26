@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import auth from "./services/auth";
 
 export default function Backend() {
   const [progress, setProgress] = useState({ current: 0, total: 0, type: "" });
@@ -77,8 +78,32 @@ export default function Backend() {
     }
   };
 
+  const [user, setUser] = useState<any>(null); // Defina o tipo de 'user' como necessário
+  const [session, setSession] = useState<string | boolean | null>(null);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const userData = await window.electron.ipcRenderer.db.get("userData");
+        setUser(userData);
+      } catch (error) {
+        console.error("Erro ao obter dados do usuário:", error);
+      }
+    };
+    const fetchSession = async () => {
+      const sessionValue = await auth.getSession(); // Chama getSession
+      setSession(sessionValue); // Atualiza o estado
+  };
+
+  fetchSession();
+
+    fetchUserData();
+  }, []);
+
   return (
     <div className="flex flex-col gap-4 bg-black/80 p-8 px-32">
+      <p className="text-xs">{user ? user.username : "Carregando..."}</p>
+      <p>{session !== null ? session : "Carregando..."}</p>
       <button onClick={() => handleLoginMicrosoft()}>Login Microsoft</button>
       <button onClick={() => handleLogoutMicrosoft()}>Sair Microsoft</button>
       <button onClick={() => handleLaunch("1.8.9", "offline", "00000000-0000-0000-0000-000000000000", "Zaaik3843")}>

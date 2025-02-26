@@ -1,64 +1,53 @@
 import axios from "axios";
 
 const saveSession = (mode: string, username: string, tagname: string | null, legacyname: string | null, token: string | null): void => {
-    localStorage.setItem('loginMode', mode);
-    localStorage.setItem('username', username);
-
-    if (tagname !== null) {
-        localStorage.setItem('tagName', tagname);
-    }
-
-    if (legacyname !== null) {
-        localStorage.setItem('legacyName', legacyname);
-    }
-
-    if (token !== null) {
-        localStorage.setItem('refreshToken', token);
-    }
+    window.electron.ipcRenderer.db.put("userData", { 
+        loginMode: mode,
+        username: username,
+        tagName: tagname,
+        legacyName: legacyname,
+        refreshToken: token
+     })
 };
 
-const getSession = () => {
-    switch (localStorage.getItem('loginMode')) {
-        case 'voxy':
-            if (localStorage.getItem('username') && localStorage.getItem('tagName') && localStorage.getItem('refreshToken')) {
-                return 'voxy';
-            }
-            break;
-        case 'microsoft':
-                return 'microsoft';
-            break;
-        case 'offline':
-            if (localStorage.getItem('username')) {
-                return 'offline';
-            }
-            break;
+const getSession = async (): Promise<string | boolean> => {
+    const data = await window.electron.ipcRenderer.db.get("userData");
+
+    if (!data || !data.loginMode) return false;
+
+    switch (data.loginMode) {
+        case "voxy":
+            return data.username && data.tagName && data.refreshToken ? "voxy" : false;
+        case "microsoft":
+            return "microsoft";
+        case "offline":
+            return data.username ? "offline" : false;
         default:
             return false;
     }
-}
+};
 
 const destroySession = async () => {
     try {
-        switch (localStorage.getItem('loginMode')) {
-            case 'voxy':
-                await axios.post('http://localhost:3000/api/launcher/auth/logout', {
-                    refreshToken: localStorage.getItem('refreshToken'),
-                });
-                break;
+        const userData = await window.electron.ipcRenderer.db.get("userData");
+
+        if (!userData || !userData.loginMode) return;
+
+        if (userData.loginMode === "voxy" && userData.refreshToken) {
+            await axios.post("http://localhost:3000/api/launcher/auth/logout", {
+                refreshToken: userData.refreshToken,
+            });
         }
     } catch (error: any) {
-        console.log('An internal error occurred.');
+        console.log("An internal error occurred:", error);
     } finally {
-        localStorage.removeItem('loginMode')
-        localStorage.removeItem('username')
-        localStorage.removeItem('tagName')
-        localStorage.removeItem('legacyName')
-        localStorage.removeItem('refreshToken')
+        await window.electron.ipcRenderer.db.put("userData", null);
     }
 };
 
-const getData = (data: string): string | null => {
-    return localStorage.getItem(data);
-}
+const getData = async (key: string): Promise<string | null> => {
+    const userData = await window.electron.ipcRenderer.db.get("userData");
+    return userData ? userData[key] ?? null : null;
+};
 
 export default { saveSession, getSession, destroySession, getData };

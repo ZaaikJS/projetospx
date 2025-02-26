@@ -15,30 +15,33 @@ function AuthSelect({ setPage }: { setPage: React.Dispatch<React.SetStateAction<
 
     const handleLoginMicrosoft = async () => {
         try {
-            setPage('microsoft')
+            setPage('microsoft');
             const result = await window.electron.ipcRenderer.loginMicrosoft();
-
+    
             if (result.success) {
                 try {
+                    const languageData: any = await window.electron.ipcRenderer.db.get("language");
+                    const language = languageData.data;
+    
                     await axios.post("http://localhost:3000/api/launcher/auth/register", {
                         mode: 'microsoft',
                         uuid: result.authorization.uuid,
                         username: result.authorization.name,
                         microsoft: true,
-                        language: localStorage.getItem('language')
+                        language: language
                     });
-                    auth.saveSession('microsoft', result.authorization.name, null, null, null)
-                    toast.success('Login successful.', { duration: 4000, style: { background: '#43a047', color: '#fff' } })
-                    navigate('/main')
+                    auth.saveSession('microsoft', result.authorization.name, null, null, null);
+                    toast.success('Login successful.', { duration: 4000, style: { background: '#43a047', color: '#fff' } });
+                    navigate('/main');
                     return;
                 } catch (error: any) {
-                    toast.error('An error ocurred on Microsoft login. Please try again.', { duration: 4000, style: { background: '#d32f2f', color: '#fff' } });
+                    toast.error('An error occurred on Microsoft login. Please try again.', { duration: 4000, style: { background: '#d32f2f', color: '#fff' } });
                     setPage(null);
                 }
             }
-
+    
             const { error } = result;
-
+    
             switch (error) {
                 case "error.gui.closed":
                     toast.error('Microsoft login canceled.', { duration: 4000, style: { background: '#d32f2f', color: '#fff' } });
@@ -49,13 +52,13 @@ function AuthSelect({ setPage }: { setPage: React.Dispatch<React.SetStateAction<
                     setPage(null);
                     break;
                 default:
-                    alert("Ocorreu um erro inesperado. Tente novamente.");
-                    console.error("Erro desconhecido:", error);
+                    alert("An unexpected error occurred. Please try again.");
+                    console.error("Unknown error:", error);
             }
         } catch (error) {
-            console.error("Ocorreu um erro ao tentar logar:", error);
+            console.error("An error occurred while trying to log in:", error);
         }
-    };
+    };    
 
     return (
         <>
@@ -70,17 +73,6 @@ export default function Auth() {
     
     const navigate = useNavigate();
 
-    const session = auth.getSession();
-
-    useEffect(() => {
-        if (session === "voxy" || session === "microsoft") {
-            navigate("/main");
-        } else if (session === "offline") {
-            navigate("/main");
-        } else {
-            navigate("/auth");
-        }
-    }, [session, navigate]);
 
     const [page, setPage] = useState<any>(null);
 
@@ -104,7 +96,7 @@ export default function Auth() {
 
     return (
         <div className="p-8 w-5xl flex flex-col justify-center items-center gap-10 bg-black/40 rounded-xl backdrop-blur-xs">
-            <img src={logo} width={160} />
+            <img src={logo} width={160} onClick={() => navigate("/main")} />
             {component}
         </div>
     );

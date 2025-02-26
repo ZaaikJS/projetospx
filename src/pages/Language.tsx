@@ -33,9 +33,7 @@ export default function Language() {
 
     const handleWriteFile = async () => {
         try {
-            const newData = { language: language };
-            await window.electron.ipcRenderer.writeFile("language.json", newData as any);
-            localStorage.setItem('language', language)
+            window.electron.ipcRenderer.db.put("language", { language: language })
             navigate("/terms")
         } catch (error) {
             console.error('Erro ao escrever no arquivo:', error);

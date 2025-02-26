@@ -7,18 +7,31 @@ contextBridge.exposeInMainWorld("electron", {
     on: (channel: string, listener: (event: any, ...args: any[]) => void) =>
       ipcRenderer.on(channel, listener),
     removeAllListeners: (channel: string) => ipcRenderer.removeAllListeners(channel),
+
+    // Funções específicas
     openLink: (url: string) => ipcRenderer.invoke("open-link", url),
     readFile: (filePath: string): Promise<string> => ipcRenderer.invoke("read-file", filePath),
     writeFile: (filePath: string, data: string): Promise<void> =>
       ipcRenderer.invoke("write-file", filePath, data),
+
+    // Autenticação Microsoft
     logoutMicrosoft: (): Promise<any> => ipcRenderer.invoke("logoutMicrosoft"),
     loginMicrosoft: (): Promise<any> => ipcRenderer.invoke("loginMicrosoft"),
     loadMicrosoft: (): Promise<any> => ipcRenderer.invoke("loadMicrosoft"),
+
+    // Lançamento do Minecraft
     launchMinecraft: (
       version: string,
       loginMode: string | null,
       uuid: string | null,
       name: string | null
     ): Promise<any> => ipcRenderer.invoke("launch-minecraft", version, loginMode, uuid, name),
+
+    // Banco de Dados (LMDB)
+    db: {
+      put: (key: string, value: any): Promise<void> => ipcRenderer.invoke("db:put", key, value),
+      get: (key: string, subKey?: string): Promise<any> => ipcRenderer.invoke("db:get", key, subKey),
+      delete: (key: string): Promise<void> => ipcRenderer.invoke("db:delete", key),
+    },
   },
 });

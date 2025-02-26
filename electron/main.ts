@@ -4,6 +4,9 @@ const { shell } = require('electron');
 import fs from 'fs';
 import { Client } from "minecraft-launcher-core";
 import { Auth } from "msmc";
+
+import { open } from 'lmdb';
+
 import keytar from 'keytar';
 
 const SERVICE_NAME = "VoxyLauncher";
@@ -107,7 +110,7 @@ ipcMain.handle("launch-minecraft", async (event, version, loginMode, uuid, name)
     let opts = {
       clientPackage: null,
       authorization,
-      root: path.join(app.getPath("appData"), "VoxyLauncherDev", "data"),
+      root: path.join(app.getPath("appData"), "VoxyLauncherDev"),
       version: {
         number: version,
         type: "release",
@@ -145,6 +148,29 @@ ipcMain.handle("launch-minecraft", async (event, version, loginMode, uuid, name)
     console.error("Erro ao iniciar o Minecraft:", error);
     return { success: false, error: error.message };
   }
+});
+
+let db = open({
+  path: path.join(app.getPath("appData"), "VoxyLauncherDev", "data"),
+  compression: true,
+});
+
+ipcMain.handle("db:put", async (_, key, value) => {
+  return db.put(key, value);
+});
+
+ipcMain.handle("db:get", async (_, key, subKey) => {
+  const data = await db.get(key);
+  
+  if (subKey && data && typeof data === "object") {
+      return data[subKey];
+  }
+
+  return data;
+});
+
+ipcMain.handle("db:delete", async (_, key) => {
+  return db.remove(key);
 });
 
 app.whenReady().then(createWindow);
