@@ -1,4 +1,4 @@
-import { SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { IoMdExit } from "react-icons/io";
 import auth from "../services/auth";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -17,20 +17,23 @@ export default function Navbar() {
 
     useEffect(() => {
         const fetchUserData = async () => {
-            const mode = await auth.getData("loginMode");
-            const user = await auth.getData("username");
+            const userData = await auth.getData();
 
-            setLoginMode(mode);
-            setUsername(user);
+            if (userData === null) {
+                return
+            }
 
-            if (user) {
-                setSkinUrl(`https://starlightskins.lunareclipse.studio/render/pointing/${user}/bust?borderHighlight=true&borderHighlightRadius=10`);
+            setLoginMode(userData.loginMode);
+            setUsername(userData.username);
+
+            if (userData.username) {
+                setSkinUrl(`https://starlightskins.lunareclipse.studio/render/pointing/${userData.username}/bust?borderHighlight=true&borderHighlightRadius=10`);
             }
         };
 
         fetchUserData();
     }, []);
-    
+
     const logout = async () => {
         try {
             auth.destroySession();
@@ -62,6 +65,8 @@ export default function Navbar() {
     const handleMouseLeave = () => {
         setHoveredButton(null);
     };
+
+    const [dialog, setDialog] = useState(false)
 
     return (
         <>

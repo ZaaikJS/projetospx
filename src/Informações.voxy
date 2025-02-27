@@ -1,0 +1,16 @@
+sqlite3:
+userData
+preferences
+
+Necessário criar a pasta "data" dentro de appdata/VoxyLauncher no instalador.
+
+
+
+
+Dialog:
+<Dialog
+    open={dialog}
+    size="sm"
+    onClose={() => setDialog(false)}
+    content={() => <div>Conteúdo do diálogo</div>}
+/>

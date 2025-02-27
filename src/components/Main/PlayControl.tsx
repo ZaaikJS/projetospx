@@ -2,10 +2,53 @@ import "./PlayControl.css"
 import playBg from "../../assets/images/play/1.jpg"
 import ProgressBar from "../Misc/ProgressBar";
 import { useEffect, useState } from "react";
+import auth from "../../services/auth";
+import { useNavigate } from "react-router-dom";
+import player from "../../services/player";
 
 export default function PlayControl() {
+  const navigate = useNavigate();
+  const [userData, setUserData] = useState<any | null>(null)
+  const [playerData, setPlayerData] = useState<any | null>(null)
   const [progress, setProgress] = useState({ current: 0, total: 0, type: "" });
+  const [insName, setInsName] = useState('')
+  const [version, setVersion] = useState('')
   const [minecraftRunning, setMinecraftRunning] = useState(false);
+
+  useEffect(() => {
+    const fetchUserDataa = async () => {
+      const fetchUserData = await auth.getData();
+      if (!fetchUserData) {
+        return navigate('/auth');
+      }
+
+      setUserData(fetchUserData);
+    };
+
+    fetchUserDataa();
+  }, []);
+
+  useEffect(() => {
+    const fetchPlayerDataa = async () => {
+      if (userData.loginMode === "voxy") {
+        const token = localStorage.getItem('refreshToken');
+        if (!token) {
+          return navigate('/auth');
+        }
+
+        const fetchPlayerData = await player.getData(token);
+        if (!fetchPlayerData) {
+
+          return navigate('/auth');
+        }
+
+        setPlayerData(fetchPlayerData);
+      }
+    };
+
+    fetchPlayerDataa();
+  }, [userData]);
+
 
   useEffect(() => {
     window.electron.ipcRenderer.on("download-progress", (event, data) => {
@@ -41,6 +84,33 @@ export default function PlayControl() {
       console.error("Erro ao lançar Minecraft:", error);
     }
   };
+
+  const playFullPvP = () => {
+
+  }
+
+  const playMinigames = () => {
+    let uuid: string | null = null;
+    let username: string | null = null;
+  
+    if (playerData && playerData.uuid) {
+      uuid = playerData.uuid;
+    } else if (userData.loginMode === "offline") {
+      uuid = "03be0ef8-b317-4302-b218-35731881e0cc";
+    }
+  
+    if (userData.username && userData.tagName) {
+      username = `${userData.username}#${userData.tagName}`;
+    } else if (userData.loginMode === "offline") {
+      username = userData.username;
+    }
+
+    setInsName('VoxyMC Minigames')
+    setVersion('1.18.2')
+  
+    handleLaunch("1.18.2", "release", userData.loginMode, uuid, username);
+  };  
+
   return (
     <>
       <div className="relative h-72 rounded-xl overflow-hidden border-2 border-white/10 shadow-lg shadow-black/20">
@@ -56,9 +126,9 @@ export default function PlayControl() {
                 <button
                   className="relative w-52 h-18 bg-neutral-500/80 shadow-md shadow-neutral-500/80 text-white/80 btn-text-shadow font-bold flex flex-col items-center justify-center overflow-hidden rounded-xl transition-all duration-300"
                 >
-                  <span className="z-10">Running</span>
-                    <span className="z-10">VoxyMC Minigames</span>
-                    <span className="z-10 text-[10px] font-extralight opacity-90">Release 1.18.2</span>
+                  <span className="z-10 text-base">Running</span>
+                  <span className="z-10">{insName}</span>
+                  <span className="z-10 text-[10px] font-extralight opacity-90">{version}</span>
 
                   <div
                     className="absolute top-0 left-0 w-full h-full bg-white/10"
@@ -86,11 +156,11 @@ export default function PlayControl() {
 
                   <button
                     className="relative w-52 h-18 bg-amber-500/90 shadow-md shadow-amber-500/80 text-white btn-text-shadow font-bold flex flex-col items-center justify-center overflow-hidden rounded-xl cursor-pointer transition-all duration-300 hover:bg-amber-500/85 hover:shadow-lg"
-                    onClick={() => handleLaunch("1.18.2", "release", null, null, null)}
+                    onClick={playMinigames}
                   >
                     <span className="z-10">Play</span>
                     <span className="z-10">VoxyMC Minigames</span>
-                    <span className="z-10 text-[10px] font-extralight opacity-90">Release 1.18.2</span>
+                    <span className="z-10 text-[10px] font-extralight opacity-90">Release 1.18.2 </span>
 
                     <div
                       className="absolute top-0 left-0 w-full h-full bg-white/20"

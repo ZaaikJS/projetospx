@@ -1,14 +1,8 @@
-import React from "react";
 import "./PlayControl.css";
 import playBg from "../../../assets/images/play/mc.jpg";
 import { BsFillCaretDownFill } from "react-icons/bs";
 
-interface PlayControlProps {
-    onTogglePlayOptions: () => void;
-    isPlayOptionsOpen: boolean;
-}
-
-const PlayControl: React.FC<PlayControlProps> = ({ onTogglePlayOptions, isPlayOptionsOpen }) => {
+const PlayControl = () => {
     return (
         <div className="h-72 rounded-xl overflow-hidden border-2 border-white/10 shadow-lg shadow-black/20 z-10">
             <div className="relative h-full bg-white/10">
@@ -24,7 +18,7 @@ const PlayControl: React.FC<PlayControlProps> = ({ onTogglePlayOptions, isPlayOp
                             <span className="z-10 text-xs font-semibold mt-2">{'<Unnamed installation>'}</span>
                             <span className="z-10 text-[10px] font-extralight opacity-90">1.8.9</span>
                         </button>
-                        <button className="mcb text-xl !px-4" onClick={onTogglePlayOptions} disabled={isPlayOptionsOpen}>
+                        <button className="mcb text-xl !px-4">
                             <BsFillCaretDownFill />
                         </button>
                     </div>

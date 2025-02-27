@@ -56,7 +56,6 @@ function AppContent() {
         </Route>
         <Route path="/main" element={<MainLayout />}>
           <Route index element={<Home />} />
-          <Route path="minecraft" element={<Minecraft />} />
           <Route path="installs" element={<Installs />} />
         </Route>
       </Routes>
@@ -74,14 +73,16 @@ function BaseLayout() {
 }
 
 function MainLayout() {
+  const [playSelect, setPlaySelect] = useState("");
+
   return (
     <IsAuth>
       <div className="flex h-screen pt-8">
-        <Selector />
+      <Selector onPlaySelectChange={setPlaySelect} />
         <div className="flex-1 flex flex-col">
           <Navbar />
           <div className="flex-1 flex">
-            <Outlet />
+            <Outlet context={{ playSelect }} />
           </div>
         </div>
       </div>

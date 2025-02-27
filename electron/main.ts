@@ -94,7 +94,7 @@ ipcMain.handle("launch-minecraft", async (event, version, type, loginMode, uuid,
   try {
     let session = await loadSession();
 
-    if (loginMode === "offline") {
+    if (loginMode === "offline" || loginMode === "voxy") {
       authorization = {
         name,
         uuid,

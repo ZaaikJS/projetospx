@@ -9,6 +9,7 @@ import auth from '../services/auth';
 import Microsoft from './Auth/Microsoft';
 import toast from 'react-hot-toast';
 import axios from 'axios';
+import Dialog from '../components/Misc/Dialog';
 
 function AuthSelect({ setPage }: { setPage: React.Dispatch<React.SetStateAction<any>> }) {
     const navigate = useNavigate();
@@ -17,12 +18,12 @@ function AuthSelect({ setPage }: { setPage: React.Dispatch<React.SetStateAction<
         try {
             setPage('microsoft');
             const result = await window.electron.ipcRenderer.loginMicrosoft();
-    
+
             if (result.success) {
                 try {
                     const languageData: any = await window.electron.ipcRenderer.db.get("preferences", "language");
                     const language = languageData.data;
-    
+
                     await axios.post("http://localhost:3000/api/launcher/auth/register", {
                         mode: 'microsoft',
                         uuid: result.authorization.uuid,
@@ -39,9 +40,9 @@ function AuthSelect({ setPage }: { setPage: React.Dispatch<React.SetStateAction<
                     setPage(null);
                 }
             }
-    
+
             const { error } = result;
-    
+
             switch (error) {
                 case "error.gui.closed":
                     toast.error('Microsoft login canceled.', { duration: 4000, style: { background: '#d32f2f', color: '#fff' } });
@@ -58,7 +59,7 @@ function AuthSelect({ setPage }: { setPage: React.Dispatch<React.SetStateAction<
         } catch (error) {
             console.error("An error occurred while trying to log in:", error);
         }
-    };    
+    };
 
     return (
         <>
@@ -70,7 +71,7 @@ function AuthSelect({ setPage }: { setPage: React.Dispatch<React.SetStateAction<
 }
 
 export default function Auth() {
-    
+
     const navigate = useNavigate();
 
 
@@ -95,9 +96,11 @@ export default function Auth() {
     }
 
     return (
-        <div className="p-8 w-5xl flex flex-col justify-center items-center gap-10 bg-black/40 rounded-xl backdrop-blur-xs">
-            <img src={logo} width={160} onClick={() => navigate("/main")} />
-            {component}
-        </div>
+        <>
+            <div className="p-8 w-5xl flex flex-col justify-center items-center gap-10 bg-black/40 rounded-xl backdrop-blur-xs">
+                <img src={logo} width={160} onClick={() => undefined} />
+                {component}
+            </div>
+        </>
     );
 }

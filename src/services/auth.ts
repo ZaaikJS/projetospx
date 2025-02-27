@@ -6,7 +6,7 @@ const saveSession = async (mode: string, username: string, tagname: string | nul
         username: username,
         tagName: tagname,
         legacyName: legacyname,
-        refreshToken: token
+        refreshToken: token,
     });
 
     if (token) {
@@ -50,9 +50,9 @@ const destroySession = async () => {
     }
 };
 
-const getData = async (key: string): Promise<string | null> => {
+const getData = async (): Promise<Record<string, any> | null> => {
     const userData = await window.electron.ipcRenderer.db.get("userData", "userData");
-    return userData ? userData[key] ?? null : null;
+    return userData ?? null;
 };
 
 export default { saveSession, getSession, destroySession, getData };
