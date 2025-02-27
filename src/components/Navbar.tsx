@@ -46,9 +46,9 @@ export default function Navbar() {
     const logIcon = () => {
         switch (loginMode) {
             case 'voxy':
-                return <img src={voxyLogo} alt="Voxy Account" width={14} />;
+                return <img draggable={false} src={voxyLogo} alt="Voxy Account" width={14} />;
             case 'microsoft':
-                return <img src={msLogo} alt="Microsoft" width={14} />;
+                return <img draggable={false} src={msLogo} alt="Microsoft" width={14} />;
             default:
                 return null;
         }
@@ -65,8 +65,6 @@ export default function Navbar() {
     const handleMouseLeave = () => {
         setHoveredButton(null);
     };
-
-    const [dialog, setDialog] = useState(false)
 
     return (
         <>
@@ -123,7 +121,7 @@ export default function Navbar() {
                     onMouseLeave={() => setJump(false)}
                 >
                     <div className="absolute h-16 w-18 bottom-0 left-1 overflow-hidden">
-                        <img
+                        <img draggable={false}
                             className={`absolute ${jump ? "bottom-0" : "-bottom-1.5"} h-16 drop-shadow-lg transition-all duration-300`}
                             src={skinUrl}
                             onError={() => setSkinUrl(bust)}
@@ -132,7 +130,7 @@ export default function Navbar() {
                     </div>
                     <div className="flex flex-col justify-center ml-16">
                         {loginMode !== "offline" && <p className="text-xs text-neutral-400">Logged as:</p>}
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-1.5">
                             <p className="-text-semibold">{username}</p>
                             <p className="text-xs text-neutral-400">{logIcon()}</p>
                         </div>

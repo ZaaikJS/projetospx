@@ -29,7 +29,7 @@ export default function Terms() {
 
     return (
         <div className="p-8 w-5xl flex flex-col justify-center items-center bg-black/40 rounded-xl backdrop-blur-xs">
-            <img src={logo} width={160} />
+            <img draggable={false} src={logo} width={160} />
             <div className="pr-2 my-4 bg-black/40 rounded-xl">
                 <div className="p-4 max-h-72 overflow-y-auto">
                     <TermsText />

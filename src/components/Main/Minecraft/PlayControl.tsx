@@ -7,7 +7,7 @@ const PlayControl = () => {
         <div className="h-72 rounded-xl overflow-hidden border-2 border-white/10 shadow-lg shadow-black/20 z-10">
             <div className="relative h-full bg-white/10">
                 <div className="relative w-full h-full overflow-hidden flex justify-center items-center shine-image group">
-                    <img
+                    <img draggable={false}
                         className="object-cover w-full h-full opacity-80 scale-100 transition-all duration-500 group-hover:scale-110 group-hover:opacity-100"
                         src={playBg}
                         alt="VoxyMC"

@@ -64,7 +64,7 @@ function AuthSelect({ setPage }: { setPage: React.Dispatch<React.SetStateAction<
     return (
         <>
             <button className="mcb-voxy" onClick={() => setPage('voxylogin')}>Voxy Account</button>
-            <button className="mcb flex gap-2" onClick={() => handleLoginMicrosoft()}>Microsoft <img src={microsoft_logo_icon} width={18} /></button>
+            <button className="mcb flex gap-2" onClick={() => handleLoginMicrosoft()}>Microsoft <img draggable={false} src={microsoft_logo_icon} width={18} /></button>
             <button className="mcb-offline" onClick={() => setPage('offline')}>Offline</button>
         </>
     );
@@ -98,7 +98,7 @@ export default function Auth() {
     return (
         <>
             <div className="p-8 w-5xl flex flex-col justify-center items-center gap-10 bg-black/40 rounded-xl backdrop-blur-xs">
-                <img src={logo} width={160} onClick={() => undefined} />
+                <img draggable={false} src={logo} width={160} onClick={() => undefined} />
                 {component}
             </div>
         </>

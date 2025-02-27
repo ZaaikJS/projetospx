@@ -40,7 +40,7 @@ export default function Language() {
 
     return (
         <div className="p-8 w-5xl flex flex-col justify-center items-center gap-10 bg-black/40 rounded-xl backdrop-blur-xs">
-            <img src={logo} width={160} />
+            <img draggable={false} src={logo} width={160} />
             <h2 className={`text-3xl text-shadow transition-opacity duration-300 ${fade}`}>
                 {languages[currentLanguage].text}
             </h2>

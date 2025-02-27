@@ -16,7 +16,7 @@ const TitleBar = () => {
     return (
         <div className="h-8 grid grid-cols-3 items-center absolute w-full bg-white/5 -webkit-app-region-drag z-50">
             <div className="flex items-center">
-                <img className="h-8 w-8 p-2" src="icon.ico" />
+                <img draggable={false} className="h-8 w-8 p-2" src="icon.ico" />
                 <p className="text-sm text-neutral-300">Voxy Launcher</p>
             </div>
             <div className="">

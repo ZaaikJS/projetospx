@@ -116,7 +116,7 @@ export default function PlayControl() {
       <div className="relative h-72 rounded-xl overflow-hidden border-2 border-white/10 shadow-lg shadow-black/20">
         <div className="relative h-full bg-white/10">
           <div className="relative w-full h-full overflow-hidden flex justify-center items-center shine-image group">
-            <img
+            <img draggable={false}
               className="object-cover w-full h-full opacity-80 scale-100 transition-all duration-500 group-hover:scale-110 group-hover:opacity-100"
               src={playBg}
               alt="VoxyMC"
@@ -140,7 +140,7 @@ export default function PlayControl() {
               ) : (
                 <>
                   <button
-                    className="relative w-52 h-18 bg-red-500/80 shadow-md shadow-red-500/80 text-white btn-text-shadow font-bold flex flex-col items-center justify-center overflow-hidden rounded-xl cursor-pointer transition-all duration-300 hover:bg-red-500/85 hover:shadow-lg"
+                    className="relative w-52 h-18 active:bg-red-500/70 bg-red-500/80 shadow-md shadow-red-500/80 text-white btn-text-shadow font-bold flex flex-col items-center justify-center overflow-hidden rounded-xl cursor-pointer transition-all duration-300 hover:bg-red-500/85 hover:shadow-lg"
                   >
                     <span className="z-10">Play</span>
                     <span className="z-10">VoxyMC FullPvP</span>
@@ -155,7 +155,7 @@ export default function PlayControl() {
                   </button>
 
                   <button
-                    className="relative w-52 h-18 bg-amber-500/90 shadow-md shadow-amber-500/80 text-white btn-text-shadow font-bold flex flex-col items-center justify-center overflow-hidden rounded-xl cursor-pointer transition-all duration-300 hover:bg-amber-500/85 hover:shadow-lg"
+                    className="relative w-52 h-18 active:bg-amber-500/80 bg-amber-500/90 shadow-md shadow-amber-500/80 text-white btn-text-shadow font-bold flex flex-col items-center justify-center overflow-hidden rounded-xl cursor-pointer transition-all duration-300 hover:bg-amber-500/85 hover:shadow-lg"
                     onClick={playMinigames}
                   >
                     <span className="z-10">Play</span>
