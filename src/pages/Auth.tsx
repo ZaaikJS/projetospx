@@ -21,7 +21,7 @@ function AuthSelect({ setPage }: { setPage: React.Dispatch<React.SetStateAction<
 
             if (result.success) {
                 try {
-                    const languageData: any = await window.electron.ipcRenderer.db.get("preferences", "language");
+                    const languageData: any = await window.electron.ipcRenderer.cacheDb.get("preferences", "language");
                     const language = languageData.data;
 
                     await axios.post("http://localhost:3000/api/launcher/auth/register", {

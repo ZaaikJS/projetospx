@@ -84,7 +84,7 @@ export default function Backend() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const userData = await window.electron.ipcRenderer.db.get("userData");
+        const userData = await window.electron.ipcRenderer.cacheDb.get("userData");
         setUser(userData);
       } catch (error) {
         console.error("Erro ao obter dados do usuário:", error);

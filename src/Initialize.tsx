@@ -11,10 +11,10 @@ export default function Initialize() {
 
     const checkData = async () => {
         try {
-            const languageContent: any = await window.electron.ipcRenderer.db.get("preferences", "language");
+            const languageContent: any = await window.electron.ipcRenderer.cacheDb.get("preferences", "language");
             setIsValidLanguage(allowedLanguages.includes(languageContent));
 
-            const termsContent: any = await window.electron.ipcRenderer.db.get("preferences", "terms");
+            const termsContent: any = await window.electron.ipcRenderer.cacheDb.get("preferences", "terms");
             setIsValidTerms(termsContent === true);
         } catch (error) {
             setIsValidLanguage(false);

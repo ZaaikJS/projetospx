@@ -26,11 +26,17 @@ declare global {
           name: string | null
         ): Promise<any>;
 
-        // Banco de Dados (LMDB)
-        db: {
+        // Banco de Dados
+        cacheDb: {
           put(table: string, key: string, value: any): Promise<void>;
           get(table: string, key: string): Promise<any>;
           delete(table: string, key: string): Promise<void>;
+        };
+        mainDb: {
+          insert(table: string, key: string, value: any): Promise<boolean>;
+          get(table: string, key: string): Promise<any>;
+          update(table: string, key: string, value: any): Promise<boolean>;
+          delete(table: string, key: string): Promise<boolean>;
         };
       };
     };

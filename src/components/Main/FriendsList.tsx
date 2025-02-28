@@ -2,8 +2,6 @@ import { FaListUl } from "react-icons/fa6";
 import Drawer from "../Misc/Drawer";
 import { useState } from "react";
 
-import friendBg from "../../assets/images/friend-bg.png"
-
 export default function FriendsList() {
     const [isDrawerOpen, setDrawerOpen] = useState(false);
 
@@ -51,12 +49,7 @@ export default function FriendsList() {
                 size={'w-80'}
                 content={
                     <>
-                        <div className="absolute top-0 left-0">
-                            <img draggable={false} src={friendBg} />
-                            <img draggable={false} src="https://starlightskins.lunareclipse.studio/render/relaxing/Zaaik/full?borderHighlight=true&borderHighlightRadius=10"
-                                className="absolute h-16 right-9 bottom-3"
-                            />
-                        </div>
+
                     </>
                 }
                 isOpen={isDrawerOpen}

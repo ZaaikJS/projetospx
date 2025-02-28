@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const saveSession = async (mode: string, username: string, tagname: string | null, legacyname: string | null, token: string | null): Promise<void> => {
-    await window.electron.ipcRenderer.db.put("userData", "userData", { 
+    await window.electron.ipcRenderer.cacheDb.put("userData", "userData", { 
         loginMode: mode,
         username: username,
         tagName: tagname,
@@ -15,7 +15,7 @@ const saveSession = async (mode: string, username: string, tagname: string | nul
 };
 
 const getSession = async (): Promise<string | boolean> => {
-    const data = await window.electron.ipcRenderer.db.get("userData", "userData");
+    const data = await window.electron.ipcRenderer.cacheDb.get("userData", "userData");
 
     if (!data || !data.loginMode) return false;
 
@@ -33,7 +33,7 @@ const getSession = async (): Promise<string | boolean> => {
 
 const destroySession = async () => {
     try {
-        const userData = await window.electron.ipcRenderer.db.get("userData", "userData");
+        const userData = await window.electron.ipcRenderer.cacheDb.get("userData", "userData");
 
         if (!userData || !userData.loginMode) return;
 
@@ -45,13 +45,13 @@ const destroySession = async () => {
     } catch (error: any) {
         console.log("An internal error occurred:", error);
     } finally {
-        await window.electron.ipcRenderer.db.put("userData", "userData", null); // Remove os dados do usuário
+        await window.electron.ipcRenderer.cacheDb.put("userData", "userData", null); // Remove os dados do usuário
         localStorage.removeItem("refreshToken"); // Remover o refreshToken do localStorage
     }
 };
 
 const getData = async (): Promise<Record<string, any> | null> => {
-    const userData = await window.electron.ipcRenderer.db.get("userData", "userData");
+    const userData = await window.electron.ipcRenderer.cacheDb.get("userData", "userData");
     return userData ?? null;
 };
 

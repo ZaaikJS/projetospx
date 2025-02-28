@@ -6,7 +6,7 @@ import { BsThreeDots } from "react-icons/bs";
 import { useState } from "react";
 
 export default function Installs() {
-    const [order, setOrder] = useState(1)
+    const [order, setOrder] = useState(0)
 
     return (
         <div className='flex flex-col gap-4 w-full h-full mr-4'>

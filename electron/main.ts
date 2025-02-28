@@ -126,6 +126,8 @@ ipcMain.handle("launch-minecraft", async (event, version, type, loginMode, uuid,
 
     event.sender.send("minecraft-started");
 
+    launcher.on('data', (e) => console.log(e));
+
     launcher.on("progress", (progress) => {
       if (progress.total > 0) {
         event.sender.send("download-progress", {
@@ -151,16 +153,18 @@ ipcMain.handle("launch-minecraft", async (event, version, type, loginMode, uuid,
   }
 });
 
-const dbPath: string = path.join(app.getPath("appData"), "VoxyLauncherDev", "data", "local");
+const cacheDbPath: string = path.join(app.getPath("appData"), "VoxyLauncherDev", "data", "local");
+const mainDbPath: string = path.join(app.getPath("appData"), "VoxyLauncherDev", "data", "main");
 
-const db = new Database(dbPath);
+const cacheDb = new Database(cacheDbPath);
+const mainDb = new Database(mainDbPath);
 
 const ensureTableExists = (tableName: string) => {
   if (!/^[a-zA-Z0-9_]+$/.test(tableName)) {
-    throw new Error("Nome da tabela inválido!");
+    throw new Error("Invalid table name!");
   }
 
-  db.exec(`
+  cacheDb.exec(`
     CREATE TABLE IF NOT EXISTS ${tableName} (
       key TEXT PRIMARY KEY,
       value TEXT NOT NULL
@@ -168,11 +172,25 @@ const ensureTableExists = (tableName: string) => {
   `);
 };
 
+const ensureMainTableExists = (tableName: string) => {
+  if (!/^[a-zA-Z0-9_]+$/.test(tableName)) {
+    throw new Error("Invalid table name!");
+  }
+
+  mainDb.exec(`
+    CREATE TABLE IF NOT EXISTS ${tableName} (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      key TEXT NOT NULL,
+      value TEXT NOT NULL
+    )
+  `);
+};
+
 type IPCHandler = (_: Electron.IpcMainInvokeEvent, table: string, key: string, value?: any, subKey?: string) => Promise<any>;
 
-ipcMain.handle("db:put", (async (_, table: string, key: string, value: any) => {
+ipcMain.handle("cacheDb:put", (async (_, table: string, key: string, value: any) => {
   ensureTableExists(table);
-  const stmt = db.prepare(`
+  const stmt = cacheDb.prepare(`
     INSERT INTO ${table} (key, value) VALUES (?, ?)
     ON CONFLICT(key) DO UPDATE SET value = excluded.value
   `);
@@ -180,9 +198,9 @@ ipcMain.handle("db:put", (async (_, table: string, key: string, value: any) => {
   return true;
 }) as IPCHandler);
 
-ipcMain.handle("db:get", (async (_, table: string, key: string, subKey?: string) => {
+ipcMain.handle("cacheDb:get", (async (_, table: string, key: string, subKey?: string) => {
   ensureTableExists(table);
-  const stmt = db.prepare(`SELECT value FROM ${table} WHERE key = ?`);
+  const stmt = cacheDb.prepare(`SELECT value FROM ${table} WHERE key = ?`);
   const row = stmt.get(key) as { value: string } | undefined;
 
   if (row) {
@@ -193,9 +211,41 @@ ipcMain.handle("db:get", (async (_, table: string, key: string, subKey?: string)
   return null;
 }) as IPCHandler);
 
-ipcMain.handle("db:delete", (async (_, table: string, key: string) => {
+ipcMain.handle("cacheDb:delete", (async (_, table: string, key: string) => {
   ensureTableExists(table);
-  const stmt = db.prepare(`DELETE FROM ${table} WHERE key = ?`);
+  const stmt = cacheDb.prepare(`DELETE FROM ${table} WHERE key = ?`);
+  stmt.run(key);
+  return true;
+}) as IPCHandler);
+
+ipcMain.handle("mainDb:insert", (async (_, table: string, key: string, value: any) => {
+  ensureMainTableExists(table);
+  const stmt = mainDb.prepare(`
+    INSERT INTO ${table} (key, value) VALUES (?, ?)
+  `);
+  stmt.run(key, JSON.stringify(value));
+  return true;
+}) as IPCHandler);
+
+ipcMain.handle("mainDb:get", (async (_, table: string, key: string) => {
+  ensureMainTableExists(table);
+  const stmt = mainDb.prepare(`SELECT value FROM ${table} WHERE key = ?`);
+  const row = stmt.get(key) as { value: string } | undefined;
+  return row ? JSON.parse(row.value) : null;
+}) as IPCHandler);
+
+ipcMain.handle("mainDb:update", (async (_, table: string, key: string, value: any) => {
+  ensureMainTableExists(table);
+  const stmt = mainDb.prepare(`
+    UPDATE ${table} SET value = ? WHERE key = ?
+  `);
+  stmt.run(JSON.stringify(value), key);
+  return true;
+}) as IPCHandler);
+
+ipcMain.handle("mainDb:delete", (async (_, table: string, key: string) => {
+  ensureMainTableExists(table);
+  const stmt = mainDb.prepare(`DELETE FROM ${table} WHERE key = ?`);
   stmt.run(key);
   return true;
 }) as IPCHandler);
