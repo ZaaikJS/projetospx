@@ -57,7 +57,7 @@ export default function VoxyRegister({ setPage }: VoxyRegisterProps) {
             try {
                 setVerify(true);
 
-                const response = await axios.get(`http://localhost:3000/api/launcher/auth/register`, {
+                const response = await axios.get(`https://voxymc.net/api/launcher/auth/register`, {
                     params: {
                         name: formData.username,
                         tagName: formData.tagName
@@ -103,17 +103,17 @@ export default function VoxyRegister({ setPage }: VoxyRegisterProps) {
         }
         
         try {
-            await axios.post('http://localhost:3000/api/launcher/auth/register', formData, {
+            await axios.post('https://voxymc.net/api/launcher/auth/register', formData, {
                 headers: { 'Content-Type': 'application/json' }
             });
     
-            const response = await axios.post('http://localhost:3000/api/launcher/auth', {
+            const response = await axios.post('https://voxymc.net/api/launcher/auth', {
                 loginMail: formData.email,
                 loginPass: formData.password
             });
     
             var data = response.data;
-            auth.saveSession('voxy', data.username, data.tagName, data.legacyName, data.refreshToken);
+            auth.saveSession('voxy', data.username, data.tagName, data.refreshToken);
             toast.success('Register successful.', { duration: 4000, style: { background: '#43a047', color: '#fff' } })
             navigate('/main');
             

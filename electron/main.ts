@@ -50,6 +50,38 @@ function createWindow() {
   })
 }
 
+let logWindow: BrowserWindow | null = null;
+
+function createLogWindow() {
+  if (logWindow) {
+    logWindow.focus();
+    return;
+  }
+
+  logWindow = new BrowserWindow({
+    width: 800,
+    height: 600,
+    title: "Console do Minecraft",
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      preload: path.join(__dirname, "preload.js"),
+    },
+  });
+
+  if (process.env.NODE_ENV === "development") {
+    logWindow.loadURL("http://localhost:5173/#/console");
+  } else {
+    logWindow.loadFile(path.join(__dirname, "../dist/index.html"), {
+      hash: "console",
+    });
+  }
+
+  logWindow.on("closed", () => {
+    logWindow = null;
+  });
+}
+
 const launcher = new Client();
 
 async function loadSession() {
@@ -116,6 +148,7 @@ ipcMain.handle("launch-minecraft", async (event, version, type, loginMode, uuid,
         number: version,
         type,
       },
+      javaPath: path.join(app.getPath("appData"), "VoxyLauncherDev", "runtime", "jdk-24", "bin", "java.exe"),
       memory: {
         max: "6G",
         min: "4G",
@@ -126,7 +159,11 @@ ipcMain.handle("launch-minecraft", async (event, version, type, loginMode, uuid,
 
     event.sender.send("minecraft-started");
 
-    launcher.on('data', (e) => console.log(e));
+    launcher.on("data", (log) => {
+      if (logWindow) {
+        logWindow.webContents.send("consoleLog", { console: log });
+      }
+    });
 
     launcher.on("progress", (progress) => {
       if (progress.total > 0) {
@@ -142,8 +179,11 @@ ipcMain.handle("launch-minecraft", async (event, version, type, loginMode, uuid,
       }
     });
 
-    launcher.on("close", (code) => {
+    launcher.on("close", () => {
       event.sender.send("minecraft-closed");
+      if (logWindow) {
+        logWindow.close();
+      }
     });
 
     return { success: true };
@@ -217,6 +257,19 @@ ipcMain.handle("cacheDb:delete", (async (_, table: string, key: string) => {
   stmt.run(key);
   return true;
 }) as IPCHandler);
+
+ipcMain.handle("cacheDb:update", (async (_, table: string, key: string, value: any) => {
+  ensureTableExists(table);
+  const stmt = cacheDb.prepare(`
+    UPDATE ${table} 
+    SET value = ? 
+    WHERE key = ?
+  `);
+  const result = stmt.run(JSON.stringify(value), key);
+
+  return result.changes > 0;
+}) as IPCHandler);
+
 
 ipcMain.handle("mainDb:insert", (async (_, table: string, key: string, value: any) => {
   ensureMainTableExists(table);

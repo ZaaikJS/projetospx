@@ -22,14 +22,13 @@ function AuthSelect({ setPage }: { setPage: React.Dispatch<React.SetStateAction<
             if (result.success) {
                 try {
                     const languageData: any = await window.electron.ipcRenderer.cacheDb.get("preferences", "language");
-                    const language = languageData.data;
 
-                    await axios.post("http://localhost:3000/api/launcher/auth/register", {
+                    await axios.post("https://voxymc.net/api/launcher/auth/register", {
                         mode: 'microsoft',
                         uuid: result.authorization.uuid,
                         username: result.authorization.name,
                         microsoft: true,
-                        language: language
+                        language: languageData
                     });
                     auth.saveSession('microsoft', result.authorization.name, null, null, null);
                     toast.success('Login successful.', { duration: 4000, style: { background: '#43a047', color: '#fff' } });

@@ -46,8 +46,8 @@ export default function Installs() {
                     <img draggable={false} src={voxyLogo} width={48} />
                 </div>
                 <div>
-                    <p className='-text-semibold'>Voxy FullPvp</p>
-                    <p className='text-sm text-neutral-400'>1.5.2</p>
+                    <p className='-text-semibold'>Voxy FullPvP</p>
+                    <p className='text-sm text-neutral-400'>1.8.9</p>
                 </div>
                 <div className='ml-auto hidden group-hover:block'>
                     <button className='bg-green-600 text-white text-sm px-2 py-1 -text-semibold shadow-lg hover:bg-green-500 cursor-pointer'>Play</button>

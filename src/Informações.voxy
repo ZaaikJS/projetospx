@@ -14,3 +14,4 @@ Dialog:
     onClose={() => setDialog(false)}
     content={() => <div>Conteúdo do diálogo</div>}
 />
+

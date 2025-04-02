@@ -22,15 +22,15 @@ export default function Posts() {
         fetchPosts();
     }, []);
 
-    const openExternalLink = () => {
-        window.electron.ipcRenderer.openLink('https://voxymc.net/post/all/1');
+    const openExternalLink = (url: string) => {
+        window.electron.ipcRenderer.openLink(url);
     };
 
     return (
         <>
             <div className="my-2 flex justify-between items-center">
                 <p className="font-semibold text-2xl text-shadow">Latest News</p>
-                <p onClick={openExternalLink} className="text-xs text-neutral-300 mr-4 text-shadow cursor-pointer hover:opacity-90 duration-100">View all</p>
+                <p onClick={() => openExternalLink('https://voxymc.net/post/all/1')} className="text-xs text-neutral-300 mr-4 text-shadow cursor-pointer hover:opacity-90 duration-100">View all</p>
             </div>
             <div className="relative flex-1 flex flex-col overflow-y-scroll">
                 <div className="max-h-px mr-2">
@@ -67,7 +67,8 @@ export default function Posts() {
                                     className="rounded-xl border-2 border-white/10"
                                 >
                                     <div
-                                        className="relative h-52 rounded-xl overflow-hidden"
+                                        className="relative h-52 rounded-xl overflow-hidden cursor-pointer"
+                                        onClick={() => openExternalLink(`https://voxymc.net/post/${post.postId}/${post.title.toLowerCase().replace(/[^\w\s-]|_/g, '').replace(/\s+/g, '-')}`)}
                                         style={{
                                             backgroundImage: `url('https://voxymc.net/uploads/images/posts/${post.image}')`,
                                             backgroundSize: "cover",

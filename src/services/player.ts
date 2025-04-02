@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:3000/api/launcher/user";
+const API_URL = "https://voxymc.net/api/launcher/user";
 
 const getData = async (refreshToken: string) => {
   try {

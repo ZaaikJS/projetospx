@@ -1,22 +1,28 @@
+import { AiOutlineLoading3Quarters } from "react-icons/ai"; // Importando o ícone
 import "./PlayControl.css"
 import playBg from "../../assets/images/play/1.jpg"
 import ProgressBar from "../Misc/ProgressBar";
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import auth from "../../services/auth";
 import { useNavigate } from "react-router-dom";
 import player from "../../services/player";
+import Dialog from "../Misc/Dialog";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 export default function PlayControl() {
   const navigate = useNavigate();
-  const [userData, setUserData] = useState<any | null>(null)
-  const [playerData, setPlayerData] = useState<any | null>(null)
+  const [userData, setUserData] = useState<any | null>(null);
+  const [playerData, setPlayerData] = useState<any | null>(null);
   const [progress, setProgress] = useState({ current: 0, total: 0, type: "" });
-  const [insName, setInsName] = useState('')
-  const [version, setVersion] = useState('')
+  const [insName, setInsName] = useState('');
+  const [version, setVersion] = useState('');
   const [minecraftRunning, setMinecraftRunning] = useState(false);
+  const [dialogLName, setDialogLName] = useState(false);
 
+  // Fetch user data on mount
   useEffect(() => {
-    const fetchUserDataa = async () => {
+    const fetchUserData = async () => {
       const fetchUserData = await auth.getData();
       if (!fetchUserData) {
         return navigate('/auth');
@@ -25,12 +31,13 @@ export default function PlayControl() {
       setUserData(fetchUserData);
     };
 
-    fetchUserDataa();
+    fetchUserData();
   }, []);
 
+  // Fetch player data if login mode is "voxy"
   useEffect(() => {
-    const fetchPlayerDataa = async () => {
-      if (userData.loginMode === "voxy") {
+    const fetchPlayerData = async () => {
+      if (userData?.loginMode === "voxy") {
         const token = localStorage.getItem('refreshToken');
         if (!token) {
           return navigate('/auth');
@@ -38,7 +45,6 @@ export default function PlayControl() {
 
         const fetchPlayerData = await player.getData(token);
         if (!fetchPlayerData) {
-
           return navigate('/auth');
         }
 
@@ -46,10 +52,10 @@ export default function PlayControl() {
       }
     };
 
-    fetchPlayerDataa();
+    fetchPlayerData();
   }, [userData]);
 
-
+  // Update download progress
   useEffect(() => {
     window.electron.ipcRenderer.on("download-progress", (event, data) => {
       setProgress(data);
@@ -73,11 +79,11 @@ export default function PlayControl() {
     };
   }, []);
 
+  // Handle Minecraft launch
   const handleLaunch = async (version: string, type: string, loginMode: string | null, uuid: string | null, name: string | null) => {
     try {
       const result = await window.electron.ipcRenderer.launchMinecraft(version, type, loginMode, uuid, name);
-      if (result.success) {
-      } else {
+      if (!result.success) {
         alert("Erro ao iniciar Minecraft: " + result.error);
       }
     } catch (error) {
@@ -86,30 +92,48 @@ export default function PlayControl() {
   };
 
   const playFullPvP = () => {
+    let uuid: string | null = null;
+    let username: string | null = null;
 
-  }
+    if (playerData?.uuid) {
+      uuid = playerData.uuid;
+    } else if (userData?.loginMode === "offline") {
+      uuid = "03be0ef8-b317-4302-b218-35731881e0cc";
+    }
+
+    if (userData?.username && userData?.tagName) {
+      username = `${userData.username}#${userData.tagName}`;
+    } else if (userData?.loginMode === "offline") {
+      username = userData.username;
+    }
+
+    setInsName('VoxyMC FullPvP');
+    setVersion('1.8.9');
+
+    handleLaunch("1.8.9", "release", userData?.loginMode, uuid, username);
+  };
 
   const playMinigames = () => {
     let uuid: string | null = null;
     let username: string | null = null;
-  
-    if (playerData && playerData.uuid) {
+
+    if (playerData?.uuid) {
       uuid = playerData.uuid;
-    } else if (userData.loginMode === "offline") {
+    } else if (userData?.loginMode === "offline") {
       uuid = "03be0ef8-b317-4302-b218-35731881e0cc";
     }
-  
-    if (userData.username && userData.tagName) {
+
+    if (userData?.username && userData?.tagName) {
       username = `${userData.username}#${userData.tagName}`;
-    } else if (userData.loginMode === "offline") {
+    } else if (userData?.loginMode === "offline") {
       username = userData.username;
     }
 
-    setInsName('VoxyMC Minigames')
-    setVersion('1.18.2')
-  
-    handleLaunch("1.18.2", "release", userData.loginMode, uuid, username);
-  };  
+    setInsName('VoxyMC Minigames');
+    setVersion('1.18.2');
+
+    handleLaunch("1.18.2", "release", userData?.loginMode, uuid, username);
+  };
 
   return (
     <>
@@ -122,7 +146,7 @@ export default function PlayControl() {
               alt="VoxyMC"
             />
             <div className="absolute flex gap-36">
-              {(minecraftRunning ? (
+              {minecraftRunning ? (
                 <button
                   className="relative w-52 h-18 bg-neutral-500/80 shadow-md shadow-neutral-500/80 text-white/80 btn-text-shadow font-bold flex flex-col items-center justify-center overflow-hidden rounded-xl transition-all duration-300"
                 >
@@ -141,10 +165,11 @@ export default function PlayControl() {
                 <>
                   <button
                     className="relative w-52 h-18 active:bg-red-500/70 bg-red-500/80 shadow-md shadow-red-500/80 text-white btn-text-shadow font-bold flex flex-col items-center justify-center overflow-hidden rounded-xl cursor-pointer transition-all duration-300 hover:bg-red-500/85 hover:shadow-lg"
+                    onClick={playFullPvP}
                   >
                     <span className="z-10">Play</span>
                     <span className="z-10">VoxyMC FullPvP</span>
-                    <span className="z-10 text-[10px] font-extralight opacity-90">Legacy 1.5.2</span>
+                    <span className="z-10 text-[10px] font-extralight opacity-90">Version 1.8.9 </span>
 
                     <div
                       className="absolute top-0 left-0 w-full h-full bg-white/10"
@@ -170,7 +195,7 @@ export default function PlayControl() {
                     ></div>
                   </button>
                 </>
-              ))}
+              )}
             </div>
           </div>
         </div>

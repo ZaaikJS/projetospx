@@ -5,6 +5,7 @@ import mcLogo from '../assets/images/mc-logo.png';
 import playVoxy from '../assets/images/playVoxy.png';
 import playMc from '../assets/images/playMc.png';
 import { useEffect, useState } from "react";
+import { HiCog6Tooth } from "react-icons/hi2";
 
 export default function Selector({ onPlaySelectChange }: { onPlaySelectChange: (value: string) => void }) {
     const location = useLocation();
@@ -13,7 +14,7 @@ export default function Selector({ onPlaySelectChange }: { onPlaySelectChange: (
     useEffect(() => {
         onPlaySelectChange(playSelect);
     }, []);
-    
+
     const handleSelect = (value: string) => {
         setPlaySelect(value);
         onPlaySelectChange(value);
@@ -22,7 +23,7 @@ export default function Selector({ onPlaySelectChange }: { onPlaySelectChange: (
     return (
         <div className="w-20 h-full">
             <div className="flex flex-col items-center">
-                <img draggable={false} className="p-3" src={logo} alt="Logo" />
+                <img draggable={false} className="p-3 ml-1" src={logo} alt="Logo" />
                 <div className="w-20 flex flex-col gap-2 mt-4">
                     <div
                         className={`group ml-2 flex justify-center items-center h-16 ${location.pathname !== "/main" ? 'rounded-2xl mr-2' : 'rounded-l-2xl border-r-0'} border-2 border-white/10 shadow-lg duration-75 relative cursor-pointer overflow-hidden`}
@@ -34,7 +35,6 @@ export default function Selector({ onPlaySelectChange }: { onPlaySelectChange: (
                         />
                         <img draggable={false} className="relative z-10" src={logoV} alt="Play Voxy" width={45} />
                     </div>
-
                     <div
                         className={`group ml-2 flex justify-center items-center h-16 ${location.pathname !== "/main" ? 'rounded-2xl mr-2' : 'rounded-l-2xl border-r-0'} border-2 border-white/10 shadow-lg duration-75 relative cursor-pointer overflow-hidden`}
                         onClick={() => handleSelect("minecraft")}
@@ -44,6 +44,11 @@ export default function Selector({ onPlaySelectChange }: { onPlaySelectChange: (
                             style={{ backgroundImage: `url(${playMc})` }}
                         />
                         <img draggable={false} className="relative z-10 rounded-xl" src={mcLogo} alt="Play Minecraft" width={45} />
+                    </div>
+                    <div className="absolute bottom-6 left-6">
+                        <HiCog6Tooth
+                            className="text-4xl opacity-50 hover:opacity-80 cursor-pointer"
+                        />
                     </div>
                 </div>
             </div>

@@ -34,6 +34,8 @@ contextBridge.exposeInMainWorld("electron", {
         ipcRenderer.invoke("cacheDb:put", table, key, value),
       get: (table: string, key: string): Promise<any> =>
         ipcRenderer.invoke("cacheDb:get", table, key),
+      update: (table: string, key: string, value: any): Promise<void> =>
+        ipcRenderer.invoke("cacheDb:update", table, key, value),
       delete: (table: string, key: string): Promise<void> =>
         ipcRenderer.invoke("cacheDb:delete", table, key),
     },

@@ -20,7 +20,7 @@ export default function Terms() {
         }
 
         try {
-            await window.electron.ipcRenderer.invoke("db:put", "preferences", "terms", true);
+            await window.electron.ipcRenderer.invoke("cacheDb:put", "preferences", "terms", true);
             navigate("/auth");
         } catch (error) {
             console.error('Erro ao salvar no banco de dados:', error);

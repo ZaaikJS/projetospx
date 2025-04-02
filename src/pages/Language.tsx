@@ -31,7 +31,7 @@ export default function Language() {
     const handleWriteFile = async () => {
         if (!language) return;
         try {
-            await window.electron.ipcRenderer.invoke("db:put", "preferences", "language", language);
+            await window.electron.ipcRenderer.invoke("cacheDb:put", "preferences", "language", language);
             navigate("/terms");
         } catch (error) {
             console.error('Erro ao salvar no banco de dados:', error);

@@ -15,7 +15,7 @@ export default function IsAuth({ children }: IsAuthProps) {
         const token = localStorage.getItem('refreshToken');
 
         try {
-            await axios.get(`http://localhost:3000/api/launcher/auth/capture`, {
+            await axios.get(`https://voxymc.net/api/launcher/auth/capture`, {
                 params: {
                     refreshToken: token,
                 }

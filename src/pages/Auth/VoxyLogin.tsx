@@ -49,12 +49,12 @@ export default function VoxyLogin({ setPage }: VoxyLoginProps) {
         }
 
         try {
-            const response = await axios.post('http://localhost:3000/api/launcher/auth', {
+            const response = await axios.post('https://voxymc.net/api/launcher/auth', {
                 loginMail: formData.email,
                 loginPass: formData.password
             });
             var data = response.data
-            auth.saveSession('voxy', data.username, data.tagName, data.legacyName, data.refreshToken)
+            auth.saveSession('voxy', data.username, data.tagName, data.refreshToken)
             toast.success('Login successful.', { duration: 4000, style: { background: '#43a047', color: '#fff' } })
             navigate('/main')
 

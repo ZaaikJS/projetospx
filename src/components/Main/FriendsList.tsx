@@ -1,6 +1,7 @@
 import { FaListUl } from "react-icons/fa6";
 import Drawer from "../Misc/Drawer";
 import { useState } from "react";
+import bust_f from '../../assets/images/bust_f.png';
 
 export default function FriendsList() {
     const [isDrawerOpen, setDrawerOpen] = useState(false);
@@ -18,10 +19,16 @@ export default function FriendsList() {
                     </p>
                 </div>
                 <div className="flex flex-col gap-2 py-2">
-                    <div className="flex">
+                    <div className="flex cursor-pointer hover:ml-1 duration-100">
                         <div className="flex justify-center items-center w-14 h-14 pb-1 bg-white/5 rounded-xl border-1 border-white/10 shadow-lg shadow-black/20">
                             <div className="w-12 h-12 rounded-xl overflow-hidden">
-                                <img draggable={false} className="mx-auto mt-1" src="https://starlightskins.lunareclipse.studio/render/dungeons/Zaaik/bust?borderHighlight=true&borderHighlightRadius=5" width={48} />
+                                <img
+                                    draggable={false}
+                                    className="mx-auto mt-1"
+                                    src="https://starlightskins.lunareclipse.studio/render/dungeons/Zaaik/bust?borderHighlight=true&borderHighlightRadius=5"
+                                    width={48}
+                                    onError={(e) => (e.currentTarget.src = bust_f)}
+                                />
                             </div>
                         </div>
                         <div className="flex flex-col justify-center ml-2">
@@ -32,10 +39,16 @@ export default function FriendsList() {
                             </p>
                         </div>
                     </div>
-                    <div className="flex">
+                    <div className="flex cursor-pointer hover:ml-1 duration-100">
                         <div className="flex justify-center items-center w-14 h-14 pb-1 bg-white/5 rounded-xl border-1 border-white/10 shadow-lg shadow-black/20">
                             <div className="w-12 h-12 rounded-xl overflow-hidden">
-                                <img draggable={false} className="mx-auto mt-1" src="https://starlightskins.lunareclipse.studio/render/dungeons/wHenriqueLSH_/bust?borderHighlight=true&borderHighlightRadius=5" width={48} />
+                                <img
+                                    draggable={false}
+                                    className="mx-auto mt-1"
+                                    src="https://starlightskins.lunareclipse.studio/render/dungeons/wHenriqueLSH_/bust?borderHighlight=true&borderHighlightRadius=5"
+                                    width={48}
+                                    onError={(e) => (e.currentTarget.src = bust_f)}
+                                />
                             </div>
                         </div>
                         <div className="flex flex-col justify-center ml-2">

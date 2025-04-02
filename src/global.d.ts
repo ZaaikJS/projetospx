@@ -30,6 +30,7 @@ declare global {
         cacheDb: {
           put(table: string, key: string, value: any): Promise<void>;
           get(table: string, key: string): Promise<any>;
+          update(table: string, key: string, value: any): Promise<void>;
           delete(table: string, key: string): Promise<void>;
         };
         mainDb: {

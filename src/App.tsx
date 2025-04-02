@@ -13,6 +13,7 @@ import IsAuth from "./contexts/IsAuth";
 import Backend from "./Backend";
 import Minecraft from "./pages/Main/Minecraft";
 import Installs from "./pages/Main/Installs";
+import Console from "./Console";
 
 function App() {
   return (
@@ -53,6 +54,7 @@ function AppContent() {
           <Route path="/lang" element={<Language />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/console" element={<Console />} />
         </Route>
         <Route path="/main" element={<MainLayout />}>
           <Route index element={<Home />} />
