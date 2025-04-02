@@ -14,6 +14,7 @@ import Backend from "./Backend";
 import Minecraft from "./pages/Main/Minecraft";
 import Installs from "./pages/Main/Installs";
 import Console from "./Console";
+import Options from "./pages/Main/Options";
 
 function App() {
   return (
@@ -59,6 +60,7 @@ function AppContent() {
         <Route path="/main" element={<MainLayout />}>
           <Route index element={<Home />} />
           <Route path="installs" element={<Installs />} />
+          <Route path="options" element={<Options />} />
         </Route>
       </Routes>
       <Toaster position="bottom-center" reverseOrder={false} />

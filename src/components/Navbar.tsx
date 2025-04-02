@@ -5,6 +5,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import bust from '../assets/images/bust.png';
 import voxyLogo from '../assets/images/logo_v.png';
 import msLogo from '../assets/images/microsoft_logo_icon.png';
+import { useLoginMode } from "../global/LoginMode";
 
 export default function Navbar() {
     const navigate = useNavigate();
@@ -15,6 +16,7 @@ export default function Navbar() {
     const [username, setUsername] = useState<string | null>(null);
     const [tagName, setTagName] = useState<string | null>(null);
     const [loginMode, setLoginMode] = useState<string | null>(null);
+    const loginStore = useLoginMode();
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -39,6 +41,7 @@ export default function Navbar() {
     const logout = async () => {
         try {
             auth.destroySession();
+            loginStore.setLoginModeState("")
             navigate('/auth');
         } catch (error) {
             console.error("Error during logout:", error);

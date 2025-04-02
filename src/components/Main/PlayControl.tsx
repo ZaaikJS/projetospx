@@ -1,8 +1,7 @@
-import { AiOutlineLoading3Quarters } from "react-icons/ai"; // Importando o ícone
 import "./PlayControl.css"
 import playBg from "../../assets/images/play/1.jpg"
 import ProgressBar from "../Misc/ProgressBar";
-import { ReactNode, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import auth from "../../services/auth";
 import { useNavigate } from "react-router-dom";
 import player from "../../services/player";
@@ -18,7 +17,6 @@ export default function PlayControl() {
   const [insName, setInsName] = useState('');
   const [version, setVersion] = useState('');
   const [minecraftRunning, setMinecraftRunning] = useState(false);
-  const [dialogLName, setDialogLName] = useState(false);
 
   // Fetch user data on mount
   useEffect(() => {
@@ -141,7 +139,7 @@ export default function PlayControl() {
         <div className="relative h-full bg-white/10">
           <div className="relative w-full h-full overflow-hidden flex justify-center items-center shine-image group">
             <img draggable={false}
-              className="object-cover w-full h-full opacity-80 scale-100 transition-all duration-500 group-hover:scale-110 group-hover:opacity-100"
+              className={`object-cover w-full h-full ${userData?.loginMode === "offline" && 'blur-sm'} opacity-80 scale-100 transition-all duration-500 group-hover:scale-110 group-hover:opacity-100`}
               src={playBg}
               alt="VoxyMC"
             />
@@ -162,39 +160,46 @@ export default function PlayControl() {
                   ></div>
                 </button>
               ) : (
-                <>
-                  <button
-                    className="relative w-52 h-18 active:bg-red-500/70 bg-red-500/80 shadow-md shadow-red-500/80 text-white btn-text-shadow font-bold flex flex-col items-center justify-center overflow-hidden rounded-xl cursor-pointer transition-all duration-300 hover:bg-red-500/85 hover:shadow-lg"
-                    onClick={playFullPvP}
-                  >
-                    <span className="z-10">Play</span>
-                    <span className="z-10">VoxyMC FullPvP</span>
-                    <span className="z-10 text-[10px] font-extralight opacity-90">Version 1.8.9 </span>
+                userData?.loginMode === "offline" ? (
+                  <div className="flex flex-col items-center gap-8">
+                    <p className="w-96 text-center text-xl text-shadow">To connect to the VoxyMC servers, you need to log in using a Voxy Account or Microsoft login (for users who own Minecraft).</p>
+                    <button className="mcb">Play Minecraft Offline</button>
+                  </div>
+                ) : (
+                  <>
+                    <button
+                      className="relative w-52 h-18 active:bg-red-500/70 bg-red-500/80 shadow-md shadow-red-500/80 text-white btn-text-shadow font-bold flex flex-col items-center justify-center overflow-hidden rounded-xl cursor-pointer transition-all duration-300 hover:bg-red-500/85 hover:shadow-lg"
+                      onClick={playFullPvP}
+                    >
+                      <span className="z-10">Play</span>
+                      <span className="z-10">VoxyMC FullPvP</span>
+                      <span className="z-10 text-[10px] font-extralight opacity-90">Version 1.8.9</span>
 
-                    <div
-                      className="absolute top-0 left-0 w-full h-full bg-white/10"
-                      style={{
-                        clipPath: 'circle(360% at 50% -660%)',
-                      }}
-                    ></div>
-                  </button>
+                      <div
+                        className="absolute top-0 left-0 w-full h-full bg-white/10"
+                        style={{
+                          clipPath: 'circle(360% at 50% -660%)',
+                        }}
+                      ></div>
+                    </button>
 
-                  <button
-                    className="relative w-52 h-18 active:bg-amber-500/80 bg-amber-500/90 shadow-md shadow-amber-500/80 text-white btn-text-shadow font-bold flex flex-col items-center justify-center overflow-hidden rounded-xl cursor-pointer transition-all duration-300 hover:bg-amber-500/85 hover:shadow-lg"
-                    onClick={playMinigames}
-                  >
-                    <span className="z-10">Play</span>
-                    <span className="z-10">VoxyMC Minigames</span>
-                    <span className="z-10 text-[10px] font-extralight opacity-90">Release 1.18.2 </span>
+                    <button
+                      className="relative w-52 h-18 active:bg-amber-500/80 bg-amber-500/90 shadow-md shadow-amber-500/80 text-white btn-text-shadow font-bold flex flex-col items-center justify-center overflow-hidden rounded-xl cursor-pointer transition-all duration-300 hover:bg-amber-500/85 hover:shadow-lg"
+                      onClick={playMinigames}
+                    >
+                      <span className="z-10">Play</span>
+                      <span className="z-10">VoxyMC Minigames</span>
+                      <span className="z-10 text-[10px] font-extralight opacity-90">Release 1.18.2 </span>
 
-                    <div
-                      className="absolute top-0 left-0 w-full h-full bg-white/20"
-                      style={{
-                        clipPath: 'circle(360% at 50% -660%)',
-                      }}
-                    ></div>
-                  </button>
-                </>
+                      <div
+                        className="absolute top-0 left-0 w-full h-full bg-white/20"
+                        style={{
+                          clipPath: 'circle(360% at 50% -660%)',
+                        }}
+                      ></div>
+                    </button>
+                  </>
+                )
               )}
             </div>
           </div>

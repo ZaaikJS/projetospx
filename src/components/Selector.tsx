@@ -1,4 +1,4 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import logo from '../assets/images/logo.png';
 import logoV from '../assets/images/logo_v.png';
 import mcLogo from '../assets/images/mc-logo.png';
@@ -6,14 +6,21 @@ import playVoxy from '../assets/images/playVoxy.png';
 import playMc from '../assets/images/playMc.png';
 import { useEffect, useState } from "react";
 import { HiCog6Tooth } from "react-icons/hi2";
+import { useLoginMode } from "../global/LoginMode";
 
 export default function Selector({ onPlaySelectChange }: { onPlaySelectChange: (value: string) => void }) {
+    const navigate = useNavigate();
     const location = useLocation();
-    const [playSelect, setPlaySelect] = useState("voxy");
+    const { LoginModeState } = useLoginMode();
+    const [playSelect, setPlaySelect] = useState(LoginModeState === "offline" ? "minecraft" : "voxy");
+
+    useEffect(() => {
+        setPlaySelect(LoginModeState === "offline" ? "minecraft" : "voxy");
+    }, [LoginModeState]);
 
     useEffect(() => {
         onPlaySelectChange(playSelect);
-    }, []);
+    }, [playSelect, onPlaySelectChange]);
 
     const handleSelect = (value: string) => {
         setPlaySelect(value);
@@ -47,6 +54,7 @@ export default function Selector({ onPlaySelectChange }: { onPlaySelectChange: (
                     </div>
                     <div className="absolute bottom-6 left-6">
                         <HiCog6Tooth
+                            onClick={() => navigate('/main/options')}
                             className="text-4xl opacity-50 hover:opacity-80 cursor-pointer"
                         />
                     </div>

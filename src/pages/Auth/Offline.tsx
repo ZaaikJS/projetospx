@@ -2,6 +2,7 @@ import { FaArrowLeft } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import auth from "../../services/auth";
 import { useState } from "react";
+import { useLoginMode } from "../../global/LoginMode";
 
 interface OfflineProps {
     setPage: (value: string | null) => void;
@@ -11,6 +12,7 @@ export default function Offline({ setPage }: OfflineProps) {
     const navigate = useNavigate();
     const [nick, setNick] = useState('');
     const [error, setError] = useState<string | null>(null);
+    const loginStore = useLoginMode();
 
     const validateNick = (name: string) => {
         if (name.length < 3) return "Nickname must be at least 3 characters.";
@@ -33,7 +35,8 @@ export default function Offline({ setPage }: OfflineProps) {
         }
 
         try {
-            auth.saveSession('offline', nick, null, null, null);
+            auth.saveSession('offline', nick, null, null);
+            loginStore.setLoginModeState("offline")
             navigate('/main');
         } catch (error: any) {
             console.log('Error.');
