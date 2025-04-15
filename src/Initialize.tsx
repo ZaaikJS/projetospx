@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import auth from "./services/auth";
+import Loading from "./pages/Loading";
 
 export default function Initialize() {
     const navigate = useNavigate();
@@ -52,5 +53,5 @@ export default function Initialize() {
         checkSession();
     }, [isValidLanguage, isValidTerms, navigate]);       
 
-    return null;
+    return <Loading />;
 }

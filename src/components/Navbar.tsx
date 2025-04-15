@@ -98,7 +98,7 @@ export default function Navbar() {
                         Installations
                     </button>
                     <button
-                        className={`uppercase cursor-pointer relative after:content-[''] after:absolute after:left-1/2 after:bottom-0 after:w-0 after:max-w-[2rem] after:h-[2px] after:bg-pink-500 after:transition-all after:duration-300 hover:after:w-full hover:after:translate-x-[-50%] ${isActive('/main/skins') ? 'after:w-full after:translate-x-[-50%]' : ''}`}
+                        className={`uppercase cursor-pointer relative after:content-[''] after:absolute after:left-1/2 after:bottom-0 after:w-0 after:max-w-[2rem] after:h-[2px] after:bg-pink-500 after:transition-all after:duration-300 hover:after:w-full hover:after:translate-x-[-50%] ${isActive('/main/skins') ? 'after:w-full after:translate-x-[-50%]' : ''} ${loginStore.LoginModeState === 'offline' && 'hidden'}`}
                         onClick={() => navigate('/main/skins')}
                         onMouseEnter={() => handleMouseEnter('skins')}
                         onMouseLeave={handleMouseLeave}

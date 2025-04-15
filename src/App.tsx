@@ -15,6 +15,7 @@ import Minecraft from "./pages/Main/Minecraft";
 import Installs from "./pages/Main/Installs";
 import Console from "./Console";
 import Options from "./pages/Main/Options";
+import Loading from "./pages/Loading";
 
 function App() {
   return (
@@ -26,7 +27,7 @@ function App() {
 
 function AppContent() {
   const location = useLocation();
-  const [background, setBackground] = useState("auth");
+  const [background, setBackground] = useState("");
 
   useEffect(() => {
     switch (location.pathname) {
@@ -46,12 +47,12 @@ function AppContent() {
   }, [location.pathname]);
 
   return (
-    <div className={background}>
+    <div className={(background || 'loading-bg')}>
       <TitleBar />
       <Routes>
         <Route path="/" element={<BaseLayout />}>
           <Route index element={<Initialize />} />
-          {/* <Route index element={<Backend />} /> */}
+          {/* <Route index element={<Initialize />} /> */}
           <Route path="/lang" element={<Language />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/auth" element={<Auth />} />

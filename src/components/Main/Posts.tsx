@@ -34,7 +34,7 @@ export default function Posts() {
             </div>
             <div className="relative flex-1 flex flex-col overflow-y-scroll">
                 <div className="max-h-px mr-2">
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 2xl:grid-cols-3 gap-4">
                         {loading ? (
                             <>
                                 <div className="flex gap-4">

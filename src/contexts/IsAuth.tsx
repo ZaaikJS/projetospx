@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import auth from "../services/auth";
+import Loading from "../pages/Loading";
 
 interface IsAuthProps {
     children: React.ReactNode;
@@ -50,7 +51,7 @@ export default function IsAuth({ children }: IsAuthProps) {
     }, []);
 
     if (isAuthenticated === null) {
-        return <div className="flex justify-center items-center w-full h-screen">Uma tela de carregamento foda...</div>;
+        return <Loading />
     }
 
     if (!isAuthenticated) {
