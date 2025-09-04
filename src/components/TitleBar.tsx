@@ -43,6 +43,22 @@ const TitleBar = () => {
     const handleMaximize = () => window.electron?.ipcRenderer?.send('maximize-window');
     const handleClose = () => window.electron?.ipcRenderer?.send('close-window');
 
+    const [ready, setReady] = useState(false);
+
+    useEffect(() => {
+        window.electron?.ipcRenderer?.on("update-ready", () => {
+            setReady(true);
+        });
+
+        return () => {
+            window.electron?.ipcRenderer?.removeAllListeners("update-ready");
+        };
+    }, []);
+
+    const installUpdate = () => {
+        window.electron?.ipcRenderer?.send("install-update");
+    };
+
     return (
         <div className="h-8 grid grid-cols-3 items-center bg-white/5 absolute w-full -webkit-app-region-drag z-50">
             <div className="flex items-center">
@@ -50,8 +66,17 @@ const TitleBar = () => {
                 <p className="text-sm text-neutral-300">Projetos PX</p>
             </div>
             <div className="flex justify-center items-center gap-1">
-                <p className="text-xs">Atualização disponível</p>
-                <button className="text-[10px] bg-green-600 px-1 py-0.5 rounded hover:opacity-80 cursor-pointer -webkit-app-region-no-drag">Atualize agora</button>
+                {ready && (
+                    <div className="contents">
+                        <p className="text-xs">Atualização disponível</p>
+                        <button
+                            className="text-[10px] bg-green-600 px-1 py-0.5 rounded hover:opacity-80 cursor-pointer -webkit-app-region-no-drag"
+                            onClick={installUpdate}
+                        >
+                            Atualize agora
+                        </button>
+                    </div>
+                )}
             </div>
             <div className="flex justify-end items-center">
                 <div className="flex text-gray-300 -webkit-app-region-no-drag">

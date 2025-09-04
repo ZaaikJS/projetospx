@@ -12,7 +12,7 @@
     "build:electron": "tsc -p electron",
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
-    "prod": "vite build && tsc -p electron && electron-builder"
+    "prod": "vite build && tsc -p electron && electron-builder --publish always"
   },
   "dependencies": {
     "@material-tailwind/react": "^3.0.0-beta.24",
@@ -20,6 +20,7 @@
     "axios": "^1.7.9",
     "better-sqlite3": "^11.8.1",
     "bytenode": "^1.5.7",
+    "electron-updater": "^6.6.2",
     "embla-carousel-react": "^8.6.0",
     "framer-motion": "^12.4.7",
     "keytar": "^7.9.0",
@@ -67,6 +68,13 @@
   },
   "build": {
     "appId": "com.zk.neooh",
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "ZaaikJS",
+        "repo": "neoohapp"
+      }
+    ],
     "productName": "Neooh",
     "protocols": [
       {

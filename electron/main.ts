@@ -9,6 +9,7 @@ import { getClientId, getAccessToken } from './client';
 import keytar from 'keytar';
 import { randomBytes } from 'crypto';
 import { getActiveResourcesInfo } from 'process';
+import { autoUpdater } from "electron-updater";
 
 let mainWindow: BrowserWindow | null = null;
 let logWindow: BrowserWindow | null = null;
@@ -117,6 +118,7 @@ if (!gotTheLock) {
 
     initializeDatabases();
     createWindow();
+    autoUpdater.checkForUpdatesAndNotify();
 
     const args = process.argv;
     const uriArg = args.find(arg => arg.startsWith('neooh://'));
@@ -145,6 +147,12 @@ if (!gotTheLock) {
     event.preventDefault();
     if (mainWindow) {
       mainWindow.webContents.send('uri', url);
+    }
+  });
+
+  autoUpdater.on("update-downloaded", () => {
+    if (mainWindow) {
+      mainWindow.webContents.send("update-ready");
     }
   });
 }

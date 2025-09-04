@@ -12,7 +12,7 @@ export default function Auth() {
     const [check, setCheck] = useState(true);
     const [checkStatus, setCheckStatus] = useState('')
     const [auth, setAuth] = useState(false)
-    const { nome, email, setUser, clearUser } = useUser();
+    // const { nome, email, setUser, clearUser } = useUser();
 
     useEffect(() => {
         setCheckStatus('Verificando conexão com servidor');
