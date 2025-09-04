@@ -150,7 +150,28 @@ if (!gotTheLock) {
     }
   });
 
+  autoUpdater.on("checking-for-update", () => {
+    console.log("🟡 Checando por updates...");
+  });
+
+  autoUpdater.on("update-available", (info) => {
+    console.log("🟢 Update disponível:", info.version);
+  });
+
+  autoUpdater.on("update-not-available", () => {
+    console.log("🔴 Nenhum update encontrado.");
+  });
+
+  autoUpdater.on("error", (err) => {
+    console.error("❌ Erro no autoUpdater:", err);
+  });
+
+  autoUpdater.on("download-progress", (progress) => {
+    console.log(`⬇️ Baixando... ${progress.percent.toFixed(0)}%`);
+  });
+
   autoUpdater.on("update-downloaded", () => {
+    console.log("✅ Update baixado, pronto para instalar.");
     if (mainWindow) {
       mainWindow.webContents.send("update-ready");
     }
