@@ -1,19 +1,25 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'path';
 const { shell } = require('electron');
-import fs from 'fs';
-import { Client } from "minecraft-launcher-core";
-import { Auth } from "msmc";
-
-import Database from "better-sqlite3";
-
+import './database';
+import './fileHandler';
+import { initWhatsapp } from './whatsapp';
+import { initializeDatabases } from './database';
+import { getClientId, getAccessToken } from './client';
 import keytar from 'keytar';
+import { randomBytes } from 'crypto';
+import { getActiveResourcesInfo } from 'process';
 
-const SERVICE_NAME = "VoxyLauncher";
-const ACCOUNT_NAME = "user_session";
+let mainWindow: BrowserWindow | null = null;
+let logWindow: BrowserWindow | null = null;
+
+// Evita criar mais de um cliente/instância por engano em dev/hot-reload
+let whatsappInitialized = false;
+
+let serverUrl = 'http://localhost:3000'
 
 function createWindow() {
-  const win = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 1280,
     height: 720,
     minWidth: 1280,
@@ -28,29 +34,36 @@ function createWindow() {
   });
 
   if (process.env.NODE_ENV === 'development') {
-    win.loadURL('http://localhost:5173');
-    win.webContents.openDevTools();
+    mainWindow.loadURL('http://localhost:5173');
+    // mainWindow.webContents.openDevTools();
   } else {
-    win.loadFile(path.join(__dirname, '../dist/index.html'));
+    mainWindow.loadFile(path.join(__dirname, 'index.html'));
+    // Se não quiser DevTools em produção, comente a linha abaixo
+    // mainWindow.webContents.openDevTools();
   }
 
-  ipcMain.on('minimize-window', () => win.minimize());
+  /* Inicializa o WhatsApp APENAS uma vez por processo
+  if (!whatsappInitialized) {
+    whatsappInitialized = true;
+    initWhatsapp(mainWindow).catch((e) =>
+      console.error('Falha ao iniciar WhatsApp:', e)
+    );
+  } */
+
+  ipcMain.on('minimize-window', () => mainWindow?.minimize());
   ipcMain.on('maximize-window', () => {
-    if (win.isMaximized()) {
-      win.unmaximize();
-    } else {
-      win.maximize();
-    }
+    if (mainWindow?.isMaximized()) mainWindow.unmaximize();
+    else mainWindow?.maximize();
   });
+  ipcMain.on('close-window', () => mainWindow?.close());
 
-  ipcMain.on('close-window', () => win.close());
-
-  ipcMain.handle('open-link', async (_, url) => {
-    shell.openExternal(url);
-  })
+  ipcMain.handle('open-url', async (_event, { url }: { url: string }) => {
+    if (typeof url !== 'string') throw new Error('URL inválida');
+    if (!/^https?:\/\//i.test(url)) url = `https://${url}`;
+    await shell.openExternal(url);
+    return true;
+  });
 }
-
-let logWindow: BrowserWindow | null = null;
 
 function createLogWindow() {
   if (logWindow) {
@@ -72,276 +85,363 @@ function createLogWindow() {
   if (process.env.NODE_ENV === "development") {
     logWindow.loadURL("http://localhost:5173/#/console");
   } else {
-    logWindow.loadFile(path.join(__dirname, "../dist/index.html"), {
-      hash: "console",
-    });
+    logWindow.loadFile(path.join(__dirname, "../dist/index.html"), { hash: "console" });
   }
 
-  logWindow.on("closed", () => {
-    logWindow = null;
+  logWindow.on("closed", () => { logWindow = null; });
+}
+
+// Variável para guardar URL passada na inicialização
+let deeplinkingUrl: string | null = null;
+
+const gotTheLock = app.requestSingleInstanceLock();
+
+if (!gotTheLock) {
+  app.quit();
+} else {
+  app.on('second-instance', (_event, argv) => {
+    const url = argv.find(arg => arg.startsWith('neooh://'));
+    if (url && mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore();
+      mainWindow.focus();
+      mainWindow.webContents.send('uri', url);
+    }
+  });
+
+  app.whenReady().then(async () => {
+    if (process.defaultApp && process.argv.length >= 2) {
+      app.setAsDefaultProtocolClient('neooh', process.execPath, [path.resolve(process.argv[1])]);
+    } else {
+      app.setAsDefaultProtocolClient('neooh');
+    }
+
+    initializeDatabases();
+    createWindow();
+
+    const args = process.argv;
+    const uriArg = args.find(arg => arg.startsWith('neooh://'));
+    if (uriArg) {
+      deeplinkingUrl = uriArg;
+    }
+
+    mainWindow?.webContents.once('did-finish-load', () => {
+      if (deeplinkingUrl) {
+        mainWindow?.webContents.send('uri', deeplinkingUrl);
+        deeplinkingUrl = null;
+      }
+    });
+  });
+
+  app.on('window-all-closed', () => {
+    if (process.platform !== 'darwin') app.quit();
+  });
+
+  app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+  });
+
+  // macOS: evento padrão para url customizada
+  app.on('open-url', (event, url) => {
+    event.preventDefault();
+    if (mainWindow) {
+      mainWindow.webContents.send('uri', url);
+    }
   });
 }
 
-const launcher = new Client();
+// ====== Auth ======
+ipcMain.handle('openAuth', async (_event) => {
+  const clientId = await getClientId();
+  shell.openExternal(`${serverUrl}/external?clientId=${clientId}`)
+});
 
-async function loadSession() {
-  const data = await keytar.getPassword(SERVICE_NAME, ACCOUNT_NAME);
-  if (data) {
-    return JSON.parse(data);
-  }
-  return null;
-}
+ipcMain.handle('authProvider', async (_event, { token, session }) => {
+  const clientId = await getClientId();
 
-async function saveSession(session: any) {
-  await keytar.setPassword(SERVICE_NAME, ACCOUNT_NAME, JSON.stringify(session));
-}
-
-let authorization: any;
-
-ipcMain.handle("loginMicrosoft", async () => {
   try {
-    const authManager = new Auth("select_account");
-    const xboxManager = await authManager.launch("electron");
-    const token = await xboxManager.getMinecraft();
-    authorization = token.mclc();
-
-    await saveSession(authorization);
-
-    return { success: true, authorization };
-  } catch (error: any) {
-    console.error("Erro ao autenticar com a Microsoft:", error);
-    return { success: false, error: error || "Erro desconhecido" };
-  }
-});
-
-ipcMain.handle("logoutMicrosoft", async () => {
-  await keytar.deletePassword(SERVICE_NAME, ACCOUNT_NAME);
-});
-
-ipcMain.handle("loadMicrosoft", async () => {
-  await loadSession();
-});
-
-ipcMain.handle("launch-minecraft", async (event, version, type, loginMode, uuid, name) => {
-  try {
-    let session = await loadSession();
-
-    if (loginMode === "offline" || loginMode === "voxy") {
-      authorization = {
-        name,
-        uuid,
-        access_token: "offline",
-      };
-    } else if (session) {
-      console.log("Sessão encontrada, reutilizando...");
-      authorization = session;
-      console.log(session)
-    } else {
-      console.log("Sessão não encontrada.");
-    }
-
-    let opts = {
-      clientPackage: null,
-      authorization,
-      root: path.join(app.getPath("appData"), "VoxyLauncherDev"),
-      version: {
-        number: version,
-        type,
-      },
-      javaPath: path.join(app.getPath("appData"), "VoxyLauncherDev", "runtime", "jdk-24", "bin", "java.exe"),
-      memory: {
-        max: "6G",
-        min: "4G",
-      },
-    };
-
-    launcher.launch(opts as any);
-
-    event.sender.send("minecraft-started");
-
-    launcher.on("data", (log) => {
-      if (logWindow) {
-        logWindow.webContents.send("consoleLog", { console: log });
-      }
+    const res = await fetch(`${serverUrl}/api/external/user`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ clientId, refreshToken: token, sessionId: session }),
     });
 
-    launcher.on("progress", (progress) => {
-      if (progress.total > 0) {
-        event.sender.send("download-progress", {
-          current: progress.task,
-          total: progress.total,
-          type: progress.type,
-        });
+    const data = await res.json();
 
-        if (progress.task >= progress.total) {
-          event.sender.send("download-complete", { type: progress.type });
+    if (res.ok) {
+      await keytar.setPassword('Neooh', 'accessToken', data.accessToken);
+      return { success: true };
+    } else {
+      return { success: false, error: data.error || 'Unknown error' };
+    }
+  } catch (error) {
+    console.error('Erro ao chamar API de login:', error);
+    return { success: false, error: 'INTERNAL_ERROR' };
+  }
+});
+
+ipcMain.handle('verifyAuth', async (_event) => {
+  const clientId = await getClientId();
+  const accessToken = await getAccessToken();
+
+  try {
+    const res = await fetch(
+      `${serverUrl}/api/external/user?clientId=${clientId}&accessToken=${accessToken}`,
+      {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+
+    if (res.ok) {
+      return { success: true };
+    } else {
+      return { success: false || 'Unknown error' };
+    }
+  } catch (error) {
+    console.error('Erro ao chamar API de login:', error);
+    return { success: false, error: 'INTERNAL_ERROR' };
+  }
+});
+
+// ====== Pipefy ======
+const query = `
+  query ($pipeId: ID!, $first: Int!, $after: String) {
+    allCards(pipeId: $pipeId, first: $first, after: $after) {
+      edges {
+        node {
+          id
+          title
+          created_at
+          current_phase {
+            name
+            color
+          }
+          assignees {
+            name
+            email
+            avatar_url
+          }
+          labels {
+            name
+            color
+          }
+          fields {
+            name
+            value
+          }
         }
       }
-    });
-
-    launcher.on("close", () => {
-      event.sender.send("minecraft-closed");
-      if (logWindow) {
-        logWindow.close();
+      pageInfo {
+        hasNextPage
+        endCursor
       }
+    }
+  }
+`;
+
+ipcMain.handle('get-pipefy-cards', async (_event, { after, email }) => {
+  try {
+    const response = await fetch('https://api.pipefy.com/graphql', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${await keytar.getPassword('Neooh', 'token')}`,
+      },
+      body: JSON.stringify({
+        query,
+        variables: {
+          pipeId: '304134796',
+          first: 50,
+          after,
+        },
+      }),
     });
 
-    return { success: true };
-  } catch (error: any) {
-    console.error("Erro ao iniciar o Minecraft:", error);
-    return { success: false, error: error.message };
+    const result = await response.json();
+
+    if (result.errors) {
+      throw new Error(result.errors[0].message);
+    }
+
+    const edges = result.data.allCards.edges;
+    const pageInfo = result.data.allCards.pageInfo;
+
+    let cards = edges.map((e: any) => e.node);
+
+    // Filtro
+    if (email) {
+      cards = cards.filter(
+        (card: any) =>
+          card.assignees.some((a: any) => a.email === email) &&
+          card.current_phase?.name !== 'CONCLUÍDO' &&
+          card.current_phase?.name !== 'ENCERRAMENTO'
+      );
+    }
+
+    // Ordena por data desc
+    cards.sort(
+      (a: { created_at: string }, b: { created_at: string }) =>
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
+
+    return { cards, pageInfo };
+  } catch (err: any) {
+    return { error: err.message };
   }
 });
 
-const cacheDbPath: string = path.join(app.getPath("appData"), "VoxyLauncherDev", "data", "local");
-const mainDbPath: string = path.join(app.getPath("appData"), "VoxyLauncherDev", "data", "main");
-
-const cacheDb = new Database(cacheDbPath);
-const mainDb = new Database(mainDbPath);
-
-const ensureTableExists = (tableName: string) => {
-  if (!/^[a-zA-Z0-9_]+$/.test(tableName)) {
-    throw new Error("Invalid table name!");
+// ====== Pipefy: buscar 1 card por ID ======
+const queryCardById = `
+  query ($id: ID!) {
+    card(id: $id) {
+      id
+      title
+      created_at
+      current_phase { name color }
+      assignees { name email avatar_url }
+      labels { name color }
+      fields { name value }
+    }
   }
+`;
 
-  cacheDb.exec(`
-    CREATE TABLE IF NOT EXISTS ${tableName} (
-      key TEXT PRIMARY KEY,
-      value TEXT NOT NULL
-    )
-  `);
-};
-
-const ensureMainTableExists = (tableName: string) => {
-  if (!/^[a-zA-Z0-9_]+$/.test(tableName)) {
-    throw new Error("Invalid table name!");
-  }
-
-  mainDb.exec(`
-    CREATE TABLE IF NOT EXISTS ${tableName} (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      key TEXT NOT NULL,
-      value TEXT NOT NULL
-    )
-  `);
-};
-
-type IPCHandler = (_: Electron.IpcMainInvokeEvent, table: string, key: string, value?: any, subKey?: string) => Promise<any>;
-
-ipcMain.handle("cacheDb:put", (async (_, table: string, key: string, value: any) => {
-  ensureTableExists(table);
-  const stmt = cacheDb.prepare(`
-    INSERT INTO ${table} (key, value) VALUES (?, ?)
-    ON CONFLICT(key) DO UPDATE SET value = excluded.value
-  `);
-  stmt.run(key, JSON.stringify(value));
-  return true;
-}) as IPCHandler);
-
-ipcMain.handle("cacheDb:get", (async (_, table: string, key: string, subKey?: string) => {
-  ensureTableExists(table);
-  const stmt = cacheDb.prepare(`SELECT value FROM ${table} WHERE key = ?`);
-  const row = stmt.get(key) as { value: string } | undefined;
-
-  if (row) {
-    const data = JSON.parse(row.value);
-    return subKey && typeof data === "object" ? data[subKey] : data;
-  }
-
-  return null;
-}) as IPCHandler);
-
-ipcMain.handle("cacheDb:delete", (async (_, table: string, key: string) => {
-  ensureTableExists(table);
-  const stmt = cacheDb.prepare(`DELETE FROM ${table} WHERE key = ?`);
-  stmt.run(key);
-  return true;
-}) as IPCHandler);
-
-ipcMain.handle("cacheDb:update", (async (_, table: string, key: string, value: any) => {
-  ensureTableExists(table);
-  const stmt = cacheDb.prepare(`
-    UPDATE ${table} 
-    SET value = ? 
-    WHERE key = ?
-  `);
-  const result = stmt.run(JSON.stringify(value), key);
-
-  return result.changes > 0;
-}) as IPCHandler);
-
-
-ipcMain.handle("mainDb:insert", (async (_, table: string, key: string, value: any) => {
-  ensureMainTableExists(table);
-  const stmt = mainDb.prepare(`
-    INSERT INTO ${table} (key, value) VALUES (?, ?)
-  `);
-  stmt.run(key, JSON.stringify(value));
-  return true;
-}) as IPCHandler);
-
-ipcMain.handle("mainDb:get", (async (_, table: string, key: string) => {
-  ensureMainTableExists(table);
-  const stmt = mainDb.prepare(`SELECT value FROM ${table} WHERE key = ?`);
-  const row = stmt.get(key) as { value: string } | undefined;
-  return row ? JSON.parse(row.value) : null;
-}) as IPCHandler);
-
-ipcMain.handle("mainDb:update", (async (_, table: string, key: string, value: any) => {
-  ensureMainTableExists(table);
-  const stmt = mainDb.prepare(`
-    UPDATE ${table} SET value = ? WHERE key = ?
-  `);
-  stmt.run(JSON.stringify(value), key);
-  return true;
-}) as IPCHandler);
-
-ipcMain.handle("mainDb:delete", (async (_, table: string, key: string) => {
-  ensureMainTableExists(table);
-  const stmt = mainDb.prepare(`DELETE FROM ${table} WHERE key = ?`);
-  stmt.run(key);
-  return true;
-}) as IPCHandler);
-
-app.whenReady().then(createWindow);
-
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit();
-});
-
-app.on('activate', () => {
-  if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow();
-  }
-});
-
-function ensureDirectoryExists(filePath: string) {
-  const dir = path.dirname(filePath);
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-}
-
-ipcMain.handle('read-file', async (event, fileName) => {
-  const filePath = path.join(app.getPath('appData'), 'VoxyLauncherDev', fileName);
+ipcMain.handle('get-pipefy-card-by-id', async (_event, { id }) => {
   try {
-    ensureDirectoryExists(filePath);
-    const data = fs.readFileSync(filePath, 'utf-8');
-    return JSON.parse(data);
-  } catch (error) {
-    console.error('Erro ao ler o arquivo:', error);
-    throw error;
+    const response = await fetch('https://api.pipefy.com/graphql', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${await keytar.getPassword('Neooh', 'token')}`,
+      },
+      body: JSON.stringify({
+        query: queryCardById,
+        variables: { id: String(id) },
+      }),
+    });
+
+    const result = await response.json();
+
+    // Erros do GraphQL
+    if (result.errors?.length) {
+      throw new Error(result.errors[0].message || 'Erro ao buscar card');
+    }
+
+    const card = result?.data?.card || null;
+
+    if (!card) {
+      // Pipefy pode retornar null quando não encontra
+      return { error: 'Card não encontrado.' };
+    }
+
+    return { card };
+  } catch (err: any) {
+    return { error: err?.message || 'Erro ao buscar card' };
   }
 });
 
-ipcMain.handle('write-file', async (event, fileName, data) => {
-  const filePath = path.join(app.getPath('appData'), 'VoxyLauncherDev', fileName);
+// ====== Pipefy: buscar cards por TÍTULO (contém) ======
+const queryAllCards = `
+  query ($pipeId: ID!, $first: Int!, $after: String) {
+    allCards(pipeId: $pipeId, first: $first, after: $after) {
+      edges {
+        node {
+          id
+          title
+          created_at
+          current_phase { name color }
+          assignees { name email avatar_url }
+          labels { name color }
+          fields { name value }
+        }
+      }
+      pageInfo { hasNextPage endCursor }
+    }
+  }
+`;
+
+ipcMain.handle('get-pipefy-cards-by-title', async (_event, { title, email }) => {
   try {
-    ensureDirectoryExists(filePath);
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
-    return true;
+    const pipeId = '304134796';
+    const pageSize = 100;         // você pode ajustar
+    const hardLimit = 500;        // máximo de cards a varrer
+    let after: string | null = null;
+    let hasNextPage = true;
+    let scanned = 0;
+    const all: any[] = [];
+
+    while (hasNextPage && scanned < hardLimit) {
+      const response: any = await fetch('https://api.pipefy.com/graphql', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${await keytar.getPassword('Neooh', 'token')}`,
+        },
+        body: JSON.stringify({
+          query: queryAllCards,
+          variables: { pipeId, first: pageSize, after },
+        }),
+      });
+
+      const result = await response.json();
+      if (result.errors?.length) throw new Error(result.errors[0].message);
+
+      const edges = result.data.allCards.edges || [];
+      const pageInfo = result.data.allCards.pageInfo || {};
+      hasNextPage = !!pageInfo.hasNextPage;
+      after = pageInfo.endCursor || null;
+
+      const pageCards = edges.map((e: any) => e.node);
+      scanned += pageCards.length;
+      all.push(...pageCards);
+    }
+
+    // Normaliza string (case-insensitive + remove acentos)
+    const norm = (s: string) =>
+      (s || "")
+        .normalize('NFD')
+        .replace(/\p{Diacritic}/gu, '')
+        .toLowerCase();
+
+    let cards = all.filter((c) => norm(c.title).includes(norm(title || "")));
+
+    // Filtro por responsável + fases (igual ao seu handle atual)
+    if (email) {
+      cards = cards.filter(
+        (card: any) =>
+          card.assignees?.some((a: any) => a.email === email) &&
+          card.current_phase?.name !== 'CONCLUÍDO' &&
+          card.current_phase?.name !== 'ENCERRAMENTO'
+      );
+    }
+
+    // Ordena por data desc
+    cards.sort(
+      (a: { created_at: string }, b: { created_at: string }) =>
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
+
+    return { cards };
+  } catch (err: any) {
+    return { error: err.message || 'Erro ao buscar cards por título' };
+  }
+});
+
+ipcMain.handle('saveToken', async (_event, { token }) => {
+  try {
+    await keytar.setPassword('Neooh', 'token', token);
+    return { success: true }
   } catch (error) {
-    console.error('Erro ao escrever no arquivo:', error);
-    throw error;
+    console.error('Erro ao salvar o token:', error);
+    return { success: false, error: 'INTERNAL_ERROR' };
+  }
+});
+
+ipcMain.handle('getToken', async (_event) => {
+  try {
+    const token = await keytar.getPassword('Neooh', 'token');
+    return { success: true, token }
+  } catch (error) {
+    console.error('Erro ao buscar o token:', error);
+    return { success: false, error: 'INTERNAL_ERROR' };
   }
 });

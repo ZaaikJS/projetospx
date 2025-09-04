@@ -1,15 +1,32 @@
 import { contextBridge, ipcRenderer } from "electron";
 
+const uriListeners = new Map<Function, (...args: any[]) => void>();
+
 contextBridge.exposeInMainWorld("electron", {
   ipcRenderer: {
     send: (channel: string, ...args: any[]) => ipcRenderer.send(channel, ...args),
     invoke: (channel: string, ...args: any[]) => ipcRenderer.invoke(channel, ...args),
     on: (channel: string, listener: (event: any, ...args: any[]) => void) =>
       ipcRenderer.on(channel, listener),
+    removeListener: (channel: string, listener: (event: any, ...args: any[]) => void) =>
+      ipcRenderer.removeListener(channel, listener),
     removeAllListeners: (channel: string) => ipcRenderer.removeAllListeners(channel),
+    onCustomURL: (callback: (url: string) => void) => {
+      const listener = (_event: any, url: string) => callback(url);
+      uriListeners.set(callback, listener);
+      ipcRenderer.on('uri', listener);
+    },
+
+    removeCustomURL: (callback: (url: string) => void) => {
+      const listener = uriListeners.get(callback);
+      if (listener) {
+        ipcRenderer.removeListener('uri', listener);
+        uriListeners.delete(callback);
+      }
+    },
 
     // Funções específicas
-    openLink: (url: string) => ipcRenderer.invoke("open-link", url),
+    openLink: (url: string) => ipcRenderer.invoke("open-url", url),
     readFile: (filePath: string): Promise<string> => ipcRenderer.invoke("read-file", filePath),
     writeFile: (filePath: string, data: string): Promise<void> =>
       ipcRenderer.invoke("write-file", filePath, data),
