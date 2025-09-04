@@ -86,7 +86,7 @@
       }
     ],
     "directories": {
-      "output": "win"
+      "output": "dist"
     },
     "files": [
       {
