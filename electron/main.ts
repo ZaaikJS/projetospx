@@ -176,6 +176,10 @@ if (!gotTheLock) {
       mainWindow.webContents.send("update-ready");
     }
   });
+
+  ipcMain.on("install-update", () => {
+    autoUpdater.quitAndInstall();
+  });
 }
 
 // ====== Auth ======
