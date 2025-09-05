@@ -12,7 +12,7 @@
     "build:electron": "tsc -p electron",
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
-    "prod": "vite build && tsc -p electron && electron-builder --publish always",
+    "prod": "electron-builder --publish always",
     "prod2": "vite build && tsc -p electron && electron-builder"
   },
   "dependencies": {
@@ -86,7 +86,7 @@
       }
     ],
     "directories": {
-      "output": "dist"
+      "output": "win"
     },
     "files": [
       {
