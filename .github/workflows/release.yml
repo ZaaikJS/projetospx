@@ -1,0 +1,27 @@
+name: Build & Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*" # só roda quando você cria uma tag do tipo v1.0.0
+
+jobs:
+  release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Instalar dependências
+        run: npm install --legacy-peer-deps
+
+      - name: Build & Publish release
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: npm run prod
