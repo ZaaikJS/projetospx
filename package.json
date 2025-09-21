@@ -1,5 +1,5 @@
 {
-  "name": "neooh",
+  "name": "projetospx",
   "private": true,
   "version": "0.0.12",
   "main": "loader.js",
@@ -12,11 +12,9 @@
     "build:electron": "tsc -p electron",
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
-    "prod": "electron-builder --publish always",
-    "prod2": "vite build && tsc -p electron && electron-builder"
+    "prod": "vite build && tsc -p electron"
   },
   "dependencies": {
-    "@material-tailwind/react": "^3.0.0-beta.24",
     "@wppconnect-team/wppconnect": "^1.37.3",
     "axios": "^1.7.9",
     "better-sqlite3": "^11.8.1",
@@ -68,18 +66,18 @@
     "wait-on": "^8.0.2"
   },
   "build": {
-    "appId": "com.zk.neooh",
+    "appId": "com.zk.projetospx",
     "publish": [
       {
         "provider": "github",
         "owner": "ZaaikJS",
-        "repo": "neoohapp"
+        "repo": "projetospx"
       }
     ],
-    "productName": "Neooh",
+    "productName": "ProjetosPX",
     "protocols": [
       {
-        "name": "Neooh",
+        "name": "ProjetosPX",
         "schemes": [
           "neooh"
         ]
@@ -111,7 +109,8 @@
     },
     "win": {
       "target": "nsis",
-      "icon": "src/assets/icon.ico"
+      "icon": "src/assets/icon.ico",
+      "artifactName": "${productName}-Setup-${version}.${ext}"
     },
     "linux": {
       "target": "AppImage",
